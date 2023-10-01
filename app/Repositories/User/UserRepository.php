@@ -2,8 +2,6 @@
 
 namespace App\Repositories\User;
 
-use App\Enums\DelFlg;
-use App\Enums\UserFlg;
 use App\Models\User;
 use App\Repositories\BaseRepository;
 

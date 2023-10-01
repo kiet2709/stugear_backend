@@ -51,14 +51,17 @@ class AuthController extends Controller
         ], $user->id);
 
         return response()->json([
-                'access_token' => $token,
-                'refresh_token' => $user->refresh_token,
-                'role' => DB::table('user_roles')
-                    ->where('user_id', $user->id)
-                    ->join('roles', 'user_roles.role_id', '=', 'roles.id')
-                    ->pluck('roles.role_name')
-                    ->toArray()
-                
+                'status' => 'success',
+                'message' => 'login sucessfully',
+                'data' => [
+                    'access_token' => $token,
+                    'refresh_token' => $user->refresh_token,
+                    'role' => DB::table('user_roles')
+                        ->where('user_id', $user->id)
+                        ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+                        ->pluck('roles.role_name')
+                        ->toArray()
+                ]
             ]);
 
     }
@@ -120,14 +123,17 @@ class AuthController extends Controller
         $user = $this->userRepository->getById($payload->id);
 
         return response()->json([
-                'access_token' => Auth::refresh(),
-                'refresh_token' => $user->refresh_token,
-                'role' => DB::table('user_roles')
-                    ->where('user_id', $user->id)
-                    ->join('roles', 'user_roles.role_id', '=', 'roles.id')
-                    ->pluck('roles.role_name')
-                    ->toArray()
-                
+                'status' => 'success',
+                'message' => 'refresh token sucessfully',
+                'data' => [
+                    'access_token' => $token,
+                    'refresh_token' => $user->refresh_token,
+                    'role' => DB::table('user_roles')
+                        ->where('user_id', $user->id)
+                        ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+                        ->pluck('roles.role_name')
+                        ->toArray()
+                ]
             ]);
     }
 

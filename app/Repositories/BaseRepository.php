@@ -128,4 +128,15 @@ abstract class BaseRepository implements RepositoryInterface
             return false;
         }
     }
+
+    public function getAll()
+    {
+        try {
+            $result = $this->model->whereNull('deleted_by')->whereNull('deleted_at')->get();
+            return $result;
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return false;
+        }
+    }
 }

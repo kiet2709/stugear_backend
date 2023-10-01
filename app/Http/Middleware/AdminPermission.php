@@ -25,8 +25,9 @@ class AdminPermission
             return $next($request);
         } else {
             return response()->json([
-                'msg' => 'do not have permission'
-            ]);
+                'status' => 'error',
+                'message' => 'do not have permission'
+            ],403);
         }
 
     }
