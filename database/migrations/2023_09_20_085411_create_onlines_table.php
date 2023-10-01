@@ -11,17 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('onlines', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->string('email')->unique()->nullable();
-            $table->string('password')->nullable();
-            $table->string('refresh_token')->nullable();
-            $table->timestamp('token_expired')->nullable();
-            $table->string('first_name')->nullable();
-            $table->string('last_name')->nullable();
-            $table->string('reputation')->nullable();
-            $table->integer('is_enable')->nullable();
+            $table->unsignedBigInteger('transaction_id')->nullable();
+            $table->foreign('transaction_id')->references('id')->on('transactions');
+            $table->string('method')->nullable();
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();
@@ -36,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('onlines');
     }
 };

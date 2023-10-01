@@ -11,23 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->nullable();
-            $table->string('email')->unique()->nullable();
-            $table->string('password')->nullable();
-            $table->string('refresh_token')->nullable();
-            $table->timestamp('token_expired')->nullable();
-            $table->string('first_name')->nullable();
-            $table->string('last_name')->nullable();
-            $table->string('reputation')->nullable();
-            $table->integer('is_enable')->nullable();
+        Schema::create('wishlist_products', function (Blueprint $table) {
+            $table->unsignedBigInteger('product_id');
+            $table->foreign('product_id')->references('id')->on('products');
+            $table->unsignedBigInteger('wishlist_id');
+            $table->foreign('wishlist_id')->references('id')->on('wishlists');
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();
             $table->dateTime('updated_at')->nullable();
             $table->integer('deleted_by')->nullable();
             $table->dateTime('deleted_at')->nullable();
+
+            $table->primary(['product_id', 'wishlist_id']);
         });
     }
 
@@ -36,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('wishlist_products');
     }
 };

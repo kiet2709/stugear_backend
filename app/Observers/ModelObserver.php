@@ -22,7 +22,7 @@ class ModelObserver
             $model->deleted_by = auth()->id();
         } else {
             $model->updated_at = Carbon::now();
-            $model->updated_by = Carbon::now();
+            $model->updated_by = auth()->id();
         }
     }
 }

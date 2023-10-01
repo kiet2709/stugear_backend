@@ -4,9 +4,9 @@ namespace App\Repositories;
 
 use App\Repositories\RepositoryInterface;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Exception;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 abstract class BaseRepository implements RepositoryInterface
 {
@@ -94,7 +94,7 @@ abstract class BaseRepository implements RepositoryInterface
                     $model = $model->update($attribute);
                 }
                 else {
-                    $model = $model->save($attribute);
+                    $model = $this->model->save($attribute);
                 }
                 if (!$model){
                     throw new Exception('Update failed');
