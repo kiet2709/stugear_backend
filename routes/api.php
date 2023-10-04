@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\VerifyController;
 
 // Route::controller(AuthController::class)->group(function () {
@@ -24,6 +25,10 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/category/{id}', [CategoryController::class, 'view']);
+
+Route::get('/products', [ProductController::class, 'index']);
+
+
 Route::get('/send-verify-email',[VerifyController::class, 'sendVerifyEmail']);
 Route::post('/verify-email',[VerifyController::class, 'verifyEmail']);
 
