@@ -12,4 +12,16 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         return Category::class;
     }
 
+    public function getCategoryById($id)
+    {
+        $category = $this->model->find($id);
+        if (!$category || $this->model->isDirty('deleted_by') || $this->model->isDirty('deleted_at'))
+        {
+            return false;
+        }
+
+        return $category;
+
+    }
+
 }

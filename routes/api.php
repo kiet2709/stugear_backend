@@ -23,6 +23,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/category/{id}', [CategoryController::class, 'view']);
 Route::get('/send-verify-email',[VerifyController::class, 'sendVerifyEmail']);
 Route::post('/verify-email',[VerifyController::class, 'verifyEmail']);
 

@@ -25,4 +25,22 @@ class CategoryController extends Controller
             'data' => $categories
         ]);
     }
+
+    public function view($id)
+    {
+        $category = $this->categoryRepository->getCategoryById($id);
+        if (!$category)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'not found category'
+            ], 404);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'found this category',
+                'data' => $category
+            ]);
+        }
+    }
 }
