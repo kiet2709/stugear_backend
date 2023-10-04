@@ -5,6 +5,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 
@@ -26,7 +27,10 @@ class User extends Authenticatable implements JWTSubject
         'refresh_token',
         'token_expired',
         'reputation',
-        'is_enable'
+        'is_enable',
+        'verify_code',
+        'verify_code_expired',
+        'is_verify_email',
     ];
 
     /**
@@ -72,5 +76,10 @@ class User extends Authenticatable implements JWTSubject
     public function userRoles()
     {
         return $this->hasMany(UserRole::class);
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = Hash::make($value);
     }
 }

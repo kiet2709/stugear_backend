@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('password')->nullable();
             $table->string('refresh_token')->nullable();
             $table->timestamp('token_expired')->nullable();
+            $table->string('verify_code')->nullable();
+            $table->timestamp('verify_code_expired')->nullable();
+            $table->integer('is_verify_email')->nullable();
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('reputation')->nullable();

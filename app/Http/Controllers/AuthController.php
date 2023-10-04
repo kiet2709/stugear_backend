@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Mail\ResetPasswordMail;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Repositories\User\UserRepositoryInterface;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Validator;
 
@@ -33,6 +36,15 @@ class AuthController extends Controller
         }
 
         $credentials = $request->only('email', 'password');
+
+        $user = $this->userRepository->findUserByEmail($credentials['email']);
+
+        if ($user->is_enable == 0) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'banned user can not login'
+            ], 403);
+        }
 
         $token = Auth::attempt($credentials);
         if (!$token) {
@@ -82,7 +94,6 @@ class AuthController extends Controller
 
         $data = $request->all();
         $data['password'] = Hash::make($data['password']);
-
         $user = $this->userRepository->save($data);
 
         DB::table('user_roles')->insert([
@@ -92,6 +103,7 @@ class AuthController extends Controller
 
         DB::table('users')->where('id', $user->id)
             ->update([
+                'is_enable' => 1,
                 'created_by' => $user->id,
                 'updated_by' => $user->id
             ]);
@@ -105,13 +117,82 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout()
+    public function sendResetPasswordEmail(Request $request)
     {
-        Auth::logout();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Successfully logged out',
-        ]);
+        $user = $this->userRepository->findUserByEmail($request->email);
+
+        if (!$user)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'not found user'
+            ], 404);
+        }
+
+        $verifyCode = rand(10000000,99999999);
+
+        $this->userRepository->save([
+            'verify_code' => $verifyCode,
+            'verify_code_expired' => Carbon::now()->addMinutes(1)
+        ], $user->id);
+        
+        $mailData = [
+            'subject' => 'Đặt lại mật khẩu Stugear',
+            'content' => 'Chúng tôi sẽ giúp bạn đặt lại mật khẩu, chỉ cần gõ mã này dưới đây.',
+            'verify_code' => $verifyCode,
+            'signature' => 'Stugear'
+        ];
+        try {
+            Mail::to($request->email)->send(new ResetPasswordMail($mailData));
+            return response()->json([
+                'status' => 'success',
+                'message' => 'send reset password email successfully'
+            ],200);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'could not send email, try again'
+            ],502);
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $user = $this->userRepository->findUserByEmail($request->email);
+
+        if (!$user)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'not found user'
+            ], 404);
+        }
+
+        if (Carbon::now() > $user->verify_code_expired)
+        {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'expired verify code'
+            ], 400);
+        } 
+
+        if ($request->verify_code == $user->verify_code) {
+            $this->userRepository->save([
+                'password' => $request->password,
+                'verify_code_expired' => Carbon::now()->subDays(4)
+            ], $user->id);
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'reset password successfully'
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'reset password failed, wrong verify code'
+            ], 400);
+        }
     }
 
     public function refresh(Request $request)
