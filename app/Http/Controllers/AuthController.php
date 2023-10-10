@@ -179,7 +179,7 @@ class AuthController extends Controller
 
         if ($request->verify_code == $user->verify_code) {
             $this->userRepository->save([
-                'password' => $request->password,
+                'password' => Hash::make($request->password),
                 'verify_code_expired' => Carbon::now()->subDays(4)
             ], $user->id);
     
