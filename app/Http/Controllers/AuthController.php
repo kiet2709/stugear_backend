@@ -66,14 +66,15 @@ class AuthController extends Controller
                 'status' => 'success',
                 'message' => 'login sucessfully',
                 'data' => [
-                    'access_token' => $token,
-                    'refresh_token' => $user->refresh_token,
-                    'role' => DB::table('user_roles')
+                    'accessToken' => $token,
+                    'refreshToken' => $user->refresh_token,
+                    'roles' => DB::table('user_roles')
                         ->where('user_id', $user->id)
                         ->join('roles', 'user_roles.role_id', '=', 'roles.id')
                         ->pluck('roles.role_name')
                         ->toArray()
-                ]
+                ],
+                'userId' => $user->id
             ]);
 
     }

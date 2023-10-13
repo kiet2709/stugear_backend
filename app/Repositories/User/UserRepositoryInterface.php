@@ -8,4 +8,8 @@ interface UserRepositoryInterface extends RepositoryInterface
 {
     public function findUserByEmail($email);
 
+    public function getAllUserWithContactDetail();
+
+    public function getUserWithContactDetailById($id);
+
 }

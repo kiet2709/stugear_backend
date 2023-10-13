@@ -23,6 +23,11 @@ class UserSeeder extends Seeder
                 'name' => $faker->name,
                 'email' => $faker->unique()->email,
                 'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'first_name' => $faker->firstName,
+                'last_name' => $faker->lastName,
+                'reputation' => $faker->numberBetween(10, 100),
+                'is_enable' => 1,
+                
             ]);
         }
     }

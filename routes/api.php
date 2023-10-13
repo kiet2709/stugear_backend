@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyController;
 
 // Route::controller(AuthController::class)->group(function () {
@@ -31,4 +32,8 @@ Route::get('/products', [ProductController::class, 'index']);
 
 Route::get('/send-verify-email',[VerifyController::class, 'sendVerifyEmail']);
 Route::post('/verify-email',[VerifyController::class, 'verifyEmail']);
+
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/{id}', [UserController::class, 'view']);
+
 
