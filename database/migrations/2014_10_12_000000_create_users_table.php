@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('reputation')->nullable();
             $table->integer('is_enable')->nullable();
+            $table->unsignedBigInteger('image_id')->nullable();
+            $table->foreign('image_id')->references('id')->on('images');
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();

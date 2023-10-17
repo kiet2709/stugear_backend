@@ -26,6 +26,8 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/category/{id}', [CategoryController::class, 'view']);
+Route::post('/category/{id}/upload-image', [CategoryController::class,'uploadImage']);
+Route::get('/category/{id}/images', [CategoryController::class,'getImage']);
 
 Route::get('/products', [ProductController::class, 'index']);
 

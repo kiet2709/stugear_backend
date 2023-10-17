@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Repositories\Category\CategoryRepositoryInterface;
+use App\Util\AppConstant;
+use App\Util\ImageService;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -40,6 +42,24 @@ class CategoryController extends Controller
                 'status' => 'success',
                 'message' => 'found this category',
                 'data' => $category
+            ]);
+        }
+    }
+
+    public function uploadImage(Request $request, $id){
+        $message = ImageService::uploadImage($request, $id, AppConstant::$UPLOAD_DIRECTORY_CATEGORY_IMAGE, 'categories');
+        return response()->json([
+            'message' => $message
+        ]);
+    }
+    public function getImage($id){
+        $path = ImageService::getPathImage($id, 'categories');
+        if (str_contains($path, 'uploads')){
+            header('Content-Type: image/jpeg');
+            readfile($path);        
+        } else {
+            return response()->json([
+                'message' => $path
             ]);
         }
     }
