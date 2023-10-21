@@ -8,4 +8,6 @@ interface ProductRepositoryInterface extends RepositoryInterface
 {
     public function getProductById($id);
 
+    public function searchByName($q);
+
 }

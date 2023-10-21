@@ -31,6 +31,7 @@ class User extends Authenticatable implements JWTSubject
         'verify_code',
         'verify_code_expired',
         'is_verify_email',
+        'image_id'
     ];
 
     /**
@@ -40,6 +41,12 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $hidden = [
         'password',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by',
+        'deleted_at',
+        'deleted_by'
     ];
 
     /**
@@ -48,7 +55,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array<string, string>
      */
     protected $casts = [
-        
+
     ];
 
      /**
@@ -69,7 +76,7 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [
-            
+
         ];
     }
 

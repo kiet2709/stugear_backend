@@ -30,7 +30,7 @@ class CategoryController extends Controller
 
     public function view($id)
     {
-        $category = $this->categoryRepository->getCategoryById($id);
+        $category = $this->categoryRepository->getById($id);
         if (!$category)
         {
             return response()->json([
@@ -56,7 +56,7 @@ class CategoryController extends Controller
         $path = ImageService::getPathImage($id, 'categories');
         if (str_contains($path, 'uploads')){
             header('Content-Type: image/jpeg');
-            readfile($path);        
+            readfile($path);
         } else {
             return response()->json([
                 'message' => $path

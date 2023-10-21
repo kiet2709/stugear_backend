@@ -66,16 +66,16 @@ class AuthController extends Controller
                 'status' => 'success',
                 'message' => 'login sucessfully',
                 'data' => [
-                    'acces_token' => $token,
+                    'access_token' => $token,
                     'refresh_token' => $user->refresh_token,
                     'roles' => DB::table('user_roles')
                         ->where('user_id', $user->id)
                         ->join('roles', 'user_roles.role_id', '=', 'roles.id')
                         ->pluck('roles.role_name')
-                        ->toArray()
+                        ->toArray(),
+                    'user_id' => $user->id,
+                    'username' => $user->name
                 ],
-                'user_id' => $user->id,
-                'username' => $user->username
             ]);
 
     }
@@ -137,7 +137,7 @@ class AuthController extends Controller
             'verify_code' => $verifyCode,
             'verify_code_expired' => Carbon::now()->addMinutes(1)
         ], $user->id);
-        
+
         $mailData = [
             'subject' => 'Đặt lại mật khẩu Stugear',
             'content' => 'Chúng tôi sẽ giúp bạn đặt lại mật khẩu, chỉ cần gõ mã này dưới đây.',
@@ -177,14 +177,14 @@ class AuthController extends Controller
                 'status' => 'failed',
                 'message' => 'expired verify code'
             ], 400);
-        } 
+        }
 
         if ($request->verify_code == $user->verify_code) {
             $this->userRepository->save([
                 'password' => Hash::make($request->password),
                 'verify_code_expired' => Carbon::now()->subDays(4)
             ], $user->id);
-    
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'reset password successfully'

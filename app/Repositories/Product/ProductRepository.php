@@ -24,4 +24,10 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
     }
 
+    public function searchByName($q)
+    {
+        $products = $this->model->where('name','LIKE','%'. $q .'%')->get();
+        return $products;
+    }
+
 }

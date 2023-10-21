@@ -13,9 +13,47 @@ class ImageService
     {
         if ($request->has('image')){
             $image = $request->image;
-            $imageName = $id . '.' . $request->image->extension();
+            $imageName = time() . '.' . $request->image->extension();
             $image->move(public_path($path), $imageName);
             self::saveImage($imageName, $id, $path, $tableNameOfImage);
+
+            // try {
+            //     $imageId = DB::table('images')->where('title', $imageName)->value('id');
+            //     dd($imageName);
+            //     if (!$imageId){
+            //         $a = DB::table('images')->insert([
+            //             'path' => $path . '/' . $imageName,
+            //             'title' => $imageName,
+            //             'created_at' => Carbon::now(),
+            //             'updated_at' => Carbon::now()
+            //         ]);
+            //         $imageId = DB::table('images')->where('title', $imageName)->value('id');
+
+            //         $b = DB::table($tableNameOfImage)
+            //             ->where('id', $id)
+            //             ->update([
+            //                 'image_id' => $imageId
+            //             ]);
+            //         // use a, b, c, d for debug if nessessary
+            //     } else {
+            //         $c = DB::table('images')
+            //             ->update([
+            //                 'updated_at' => Carbon::now()
+            //             ]);
+
+            //         $d = DB::table($tableNameOfImage)
+            //             ->where('id', $id)
+            //             ->update([
+            //                 'updated_at' => Carbon::now()
+            //             ]);
+            //     }
+            // } catch (\Throwable $th) {
+            //     return AppConstant::$UPLOAD_FAILURE;
+            // }
+
+
+
+
             return AppConstant::$UPLOAD_SUCCESS;
         }
         return AppConstant::$UPLOAD_FAILURE;
@@ -33,6 +71,7 @@ class ImageService
                     'updated_at' => Carbon::now()
                 ]);
                 $imageId = DB::table('images')->where('title', $imageName)->value('id');
+                // dd($imageId);
                 $b = DB::table($tableNameOfImage)
                     ->where('id', $id)
                     ->update([
@@ -50,7 +89,7 @@ class ImageService
                     ->update([
                         'updated_at' => Carbon::now()
                     ]);
-            } 
+            }
         } catch (\Throwable $th) {
             return AppConstant::$UPLOAD_FAILURE;
         }
@@ -67,6 +106,6 @@ class ImageService
         } catch (\Throwable $th) {
             return AppConstant::$ERROR_WITH_IMAGE;
         }
-        
+
     }
 }

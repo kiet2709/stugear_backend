@@ -15,27 +15,42 @@ use App\Http\Controllers\VerifyController;
 //     Route::post('refresh', 'refresh');
 
 // });
-
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/refresh', [AuthController::class, 'refresh'])->middleware('auth_jwt');
-Route::get('/send-reset-password-email', [AuthController::class, 'sendResetPasswordEmail']);
-Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
-
-
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/category/{id}', [CategoryController::class, 'view']);
-Route::post('/category/{id}/upload-image', [CategoryController::class,'uploadImage']);
-Route::get('/category/{id}/images', [CategoryController::class,'getImage']);
-
-Route::get('/products', [ProductController::class, 'index']);
+Route::controller(AuthController::class)->prefix('auth')->group(function (){
+    Route::post('/register', 'register');
+    Route::post('/login', 'login');
+    Route::post('/refresh', 'refresh')->middleware('auth_jwt');
+    Route::get('/send-reset-password-email', 'sendResetPasswordEmail');
+    Route::post('/reset-password', 'resetPassword');
+});
 
 
-Route::get('/send-verify-email',[VerifyController::class, 'sendVerifyEmail']);
-Route::post('/verify-email',[VerifyController::class, 'verifyEmail']);
 
-Route::get('/users', [UserController::class, 'index']);
-Route::get('/users/{id}', [UserController::class, 'view']);
+Route::controller(CategoryController::class)->prefix('categories')->group(function (){
+    Route::get('/', 'index');
+    Route::get('/{id}', 'view');
+    Route::post('/{id}/upload-image', 'uploadImage');
+    Route::get('/{id}/images', 'getImage');
+});
+
+Route::controller(ProductController::class)->prefix('products')->group(function (){
+    Route::get('/', 'index');
+    Route::get('/search','searchByName');
+    Route::get('/{id}', 'view');
+    Route::post('/{id}/upload-image', 'uploadImage');
+    Route::get('/{id}/images', 'getImage');
+});
+
+Route::controller(VerifyController::class)->prefix('products')->group(function (){
+    Route::get('/send-verify-email','sendVerifyEmail');
+    Route::post('/verify-email','verifyEmail');
+});
+
+Route::controller(UserController::class)->prefix('users')->group(function (){
+    Route::get('/users', 'index');
+    Route::get('/users/{id}', 'view');
+    Route::post('/{id}/upload-image', 'uploadImage');
+    Route::get('/{id}/images', 'getImage');
+});
+
 
 

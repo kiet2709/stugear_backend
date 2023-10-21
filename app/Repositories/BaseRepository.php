@@ -28,15 +28,19 @@ abstract class BaseRepository implements RepositoryInterface
 
     /**
      * Find model by id return true if find and false if not
-     * 
+     *
      * @param int $id
-     * 
+     *
      * @return mixed
      */
     public function getById($id)
     {
         try {
             $result = $this->model->find($id);
+            if (!$result || $result->deleted_by != null || $result->deleted_at != null)
+            {
+                return false;
+            }
             return $result;
         } catch (\Throwable $th) {
             Log::error($th);
@@ -46,10 +50,10 @@ abstract class BaseRepository implements RepositoryInterface
 
     /**
      * Insert or update record if id exist, return true if success and false if not
-     * 
+     *
      * @param null|int $id
      * @param array $attributes
-     * 
+     *
      * @return mixed
      */
     public function save($attributes, $id = null)
@@ -74,10 +78,10 @@ abstract class BaseRepository implements RepositoryInterface
 
     /**
      * Insert or update multiple record if id exist, return true if success and false if not
-     * 
+     *
      * @param null|array $ids
      * @param array $attributes
-     * 
+     *
      * @return mixed
      */
     public function saveMany($attributes, $ids = null)
@@ -112,9 +116,9 @@ abstract class BaseRepository implements RepositoryInterface
 
     /**
      * Delete record by id, return true if success and false if not
-     * 
+     *
      * @param int $id
-     * 
+     *
      * @return mixed
      */
     public function deleteById($id)
