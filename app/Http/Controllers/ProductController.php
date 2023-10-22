@@ -61,8 +61,9 @@ class ProductController extends Controller
             $productTags = $product->productTags;
             $tags = [];
             foreach ($productTags as $productTag) {
-                $tags['name'] = $productTag->tag->name;
-                $tags['color'] = $productTag->tag->color;
+                $tagMember['name'] = $productTag->tag->name;
+                $tagMember['color'] = $productTag->tag->color;
+                array_push($tags, $tagMember);
             }
             $memberData['tags'] = $tags;
             $memberData['last_updated'] = $product->updated_at ?? '';
@@ -124,8 +125,9 @@ class ProductController extends Controller
             $productTags = $product->productTags;
             $tags = [];
             foreach ($productTags as $productTag) {
-                $tags['name'] = $productTag->tag->name;
-                $tags['color'] = $productTag->tag->color;
+                $tagMember['name'] = $productTag->tag->name;
+                $tagMember['color'] = $productTag->tag->color;
+                array_push($tags, $tagMember);
             }
             $memberData['tags'] = $tags;
             $memberData['last_updated'] = $product->updated_at ?? '';
@@ -158,8 +160,11 @@ class ProductController extends Controller
             $memberData['comment_count'] = '';
             $productTags = $product->productTags;
             $tags = [];
-            $tags['name'] = $tag->name;
-            $tags['color'] = 'bg-danger';
+            foreach ($productTags as $productTag) {
+                $tagMember['name'] = $productTag->tag->name;
+                $tagMember['color'] = $productTag->tag->color;
+                array_push($tags, $tagMember);
+            }
             $memberData['tags'] = $tags;
             $memberData['last_updated'] = $product->updated_at ?? '';
             $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user->id . '/images';;

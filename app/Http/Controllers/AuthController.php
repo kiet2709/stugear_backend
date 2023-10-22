@@ -201,6 +201,22 @@ class AuthController extends Controller
     public function refresh(Request $request)
     {
         $user = $this->userRepository->getById($request->user_id);
+
+        $bareToken = $request->token;
+        $parts = explode('.', $bareToken);
+        $payload = json_decode(base64_decode($parts[1]));
+        $now = time();
+        $signature = hash_hmac('sha256', $parts[0] . '.' . $parts[1], env('JWT_SECRET'), true);
+        $computedBase64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+
+        if ($computedBase64UrlSignature != $parts[2]) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'token invalid'
+            ],498);
+
+        }
+
         if (Carbon::now() > $user->token_expired) {
             return response()->json([
                 'status' => 'error',
@@ -221,6 +237,11 @@ class AuthController extends Controller
                         ->toArray()
                 ]
             ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'lỗi không đúng refresh token',
+            ],498);
         }
         // $token = $request->header();
         // $bareToken = substr($token['authorization'][0], 7);

@@ -17,7 +17,7 @@ class AuthJWT
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->header();
-        
+
 
         if (isset($token['authorization'])) {
 
@@ -39,15 +39,19 @@ class AuthJWT
                 return $next($request);
 
             } else {
+                // dd($now < $payload->exp);
                 $id = $payload->id;
 
                 $user = User::find($id);
                 if ($now < $user->token_expired) {
-                    return $next($request);
+                    return response()->json([
+                        'status' => 'warning',
+                        'message' => 'Hãy refresh token'
+                    ],401);
                 } else {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'refresh token expire, please login'
+                        'message' => 'Refresh token hết hạn, vui lòng đăng nhập lại!'
                     ],401);
                 }
             }
