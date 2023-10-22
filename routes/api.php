@@ -19,7 +19,7 @@ use App\Http\Controllers\VerifyController;
 Route::controller(AuthController::class)->prefix('auth')->group(function (){
     Route::post('/register', 'register');
     Route::post('/login', 'login');
-    Route::post('/refresh', 'refresh')->middleware('auth_jwt');
+    Route::post('/refresh', 'refresh');
     Route::get('/send-reset-password-email', 'sendResetPasswordEmail');
     Route::post('/reset-password', 'resetPassword');
 });
@@ -31,7 +31,7 @@ Route::controller(CategoryController::class)->prefix('categories')->group(functi
     Route::get('/{id}', 'view');
     Route::post('/{id}/upload-image', 'uploadImage')->middleware('admin_permission');
     Route::get('/{id}/images', 'getImage');
-    Route::get('/{id}/statistic-by-category','getStatisticByCategory');
+    Route::get('/{id}/statistic','getStatisticByCategory');
 });
 
 Route::controller(ProductController::class)->prefix('products')->group(function (){
@@ -41,9 +41,9 @@ Route::controller(ProductController::class)->prefix('products')->group(function 
     Route::get('/category/{id}', 'getProductByCategoryId');
     Route::get('/tag/{id}','getProductByTagId');
     Route::get('/{id}', 'view');
-    Route::post('/', 'create');
-    Route::patch('/status/{id}','updateStatus');
-    Route::patch('/{id}/attach-tag','attachTag');
+    Route::post('/', 'create')->middleware('auth_jwt');
+    Route::patch('/status/{id}','updateStatus')->middleware('auth_jwt');
+    Route::patch('/{id}/attach-tag','attachTag')->middleware('auth_jwt');
     Route::post('/{id}/upload-image', 'uploadImage')->middleware('auth_jwt');
     Route::get('/{id}/images', 'getImage');
 });
@@ -58,11 +58,11 @@ Route::controller(UserController::class)->prefix('users')->group(function (){
     Route::get('/users/{id}', 'view');
     Route::post('/{id}/upload-image', 'uploadImage')->middleware('auth_jwt');
     Route::get('/{id}/images', 'getImage');
-    Route::patch('/status/{id}','updateStatus');
+    Route::patch('/status/{id}','updateStatus')->middleware('auth_jwt');
 });
 
 Route::controller(TagController::class)->prefix('tags')->group(function (){
-    Route::post('/', 'create');
+    Route::post('/', 'create')->middleware('auth_jwt');
     Route::get('/{id}', 'view');
 });
 

@@ -13,6 +13,7 @@ use App\Repositories\User\UserRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Validator;
 
@@ -199,25 +200,47 @@ class AuthController extends Controller
 
     public function refresh(Request $request)
     {
-        $token = $request->header();
-        $bareToken = substr($token['authorization'][0], 7);
-        $parts = explode('.', $bareToken);
-        $payload = json_decode(base64_decode($parts[1]));
-        $user = $this->userRepository->getById($payload->id);
-
-        return response()->json([
+        $user = $this->userRepository->getById($request->user_id);
+        if (Carbon::now() > $user->token_expired) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Phiên đăng nhập đã hết hạn, hãy đăng nhập lại!'
+            ],401);
+        }
+        if ($user->refresh_token == $request->refresh_token) {
+            return response()->json([
                 'status' => 'success',
                 'message' => 'refresh token sucessfully',
                 'data' => [
-                    'access_token' => $token,
+                    'access_token' => JWTAuth::parseToken()->refresh(),
                     'refresh_token' => $user->refresh_token,
                     'role' => DB::table('user_roles')
-                        ->where('user_id', $user->id)
+                        ->where('user_id', $request->user_id)
                         ->join('roles', 'user_roles.role_id', '=', 'roles.id')
                         ->pluck('roles.role_name')
                         ->toArray()
                 ]
             ]);
+        }
+        // $token = $request->header();
+        // $bareToken = substr($token['authorization'][0], 7);
+        // $parts = explode('.', $bareToken);
+        // $payload = json_decode(base64_decode($parts[1]));
+        // $user = $this->userRepository->getById($payload->id);
+
+        // return response()->json([
+        //         'status' => 'success',
+        //         'message' => 'refresh token sucessfully',
+        //         'data' => [
+        //             'access_token' => $token,
+        //             'refresh_token' => $user->refresh_token,
+        //             'role' => DB::table('user_roles')
+        //                 ->where('user_id', $user->id)
+        //                 ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+        //                 ->pluck('roles.role_name')
+        //                 ->toArray()
+        //         ]
+        //     ]);
     }
 
 }
