@@ -23,7 +23,6 @@ class ContactDetailSeeder extends Seeder
             'twitter.com',
             'instagram.com',
             'linkedin.com',
-            // Add more social media domains as needed
         ];
 
         for ($i = 0; $i < $limit; $i++) {

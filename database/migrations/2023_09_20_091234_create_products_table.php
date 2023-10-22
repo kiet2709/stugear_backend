@@ -14,17 +14,13 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable();
-            $table->string('price')->nullable();
+            $table->integer('price')->nullable();
             $table->text('description')->nullable();
-            $table->integer('excellent')->nullable();
-            $table->integer('good')->nullable();
-            $table->integer('bad')->nullable();
-            $table->integer('old')->nullable();
+            $table->enum('condition', [0, 1])->nullable();
             $table->string('edition')->nullable();
             $table->integer('origin_price')->nullable();
             $table->integer('quantity')->nullable();
-            $table->integer('available')->nullable();
-            $table->integer('unavailable')->nullable();
+            $table->enum('status', [0, 1])->default(0);
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('category_id')->nullable();

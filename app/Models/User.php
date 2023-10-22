@@ -31,7 +31,13 @@ class User extends Authenticatable implements JWTSubject
         'verify_code',
         'verify_code_expired',
         'is_verify_email',
-        'image_id'
+        'image_id',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by',
+        'deleted_at',
+        'deleted_by'
     ];
 
     /**
@@ -83,6 +89,11 @@ class User extends Authenticatable implements JWTSubject
     public function userRoles()
     {
         return $this->hasMany(UserRole::class);
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
     }
 
 }

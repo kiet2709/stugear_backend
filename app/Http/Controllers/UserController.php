@@ -6,6 +6,8 @@ use App\Util\ImageService;
 use App\Util\AppConstant;
 use Illuminate\Http\Request;
 use App\Repositories\User\UserRepositoryInterface;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -52,5 +54,27 @@ class UserController extends Controller
                 'message' => $path
             ]);
         }
+    }
+
+    public function updateStatus(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|min:1',
+            'status' => 'required|in:0,1',
+        ]);
+
+        if ($validator->fails()) {
+             return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $this->userRepository->save([
+            'is_enable' => strval($request->status),
+            'updated_at'=> Carbon::now(),
+            'updated_by' => $request->user_id
+        ], $id);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Cập nhật trạng thái người dùng thành công',
+        ]);
     }
 }

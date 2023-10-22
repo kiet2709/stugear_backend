@@ -18,18 +18,20 @@ class Product extends Model
         'name',
         'price',
         'description',
-        'excellent',
-        'good',
-        'bad',
-        'old',
+        'condition',
         'edition',
         'origin_price',
         'quantity',
-        'available',
-        'unavailable',
+        'status',
         'user_id',
         'category_id',
-        'transaction_id'
+        'transaction_id',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by',
+        'deleted_at',
+        'deleted_by'
     ];
 
     protected $hidden = [
@@ -40,4 +42,18 @@ class Product extends Model
         'deleted_at',
         'deleted_by'
     ];
+
+    public function category() {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function productTags()
+    {
+        return $this->hasMany(ProductTag::class);
+    }
 }

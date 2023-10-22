@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             TransactionSeeder::class,
             ProductSeeder::class,
             ContactDetailSeeder::class,
+            TagSeeder::class,
         ]);
     }
 }

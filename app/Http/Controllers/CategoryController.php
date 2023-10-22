@@ -7,6 +7,7 @@ use App\Repositories\Category\CategoryRepositoryInterface;
 use App\Util\AppConstant;
 use App\Util\ImageService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -62,5 +63,25 @@ class CategoryController extends Controller
                 'message' => $path
             ]);
         }
+    }
+
+    public function getStatisticByCategory($id) {
+        $category = $this->categoryRepository->getById($id);
+        $products = $category->products;
+        $sold = $products->where('condition', 0)->count();
+        $tagTotal = 0;
+        foreach ($products as $product) {
+            $tagTotal = $tagTotal + DB::table('product_tags')->where('product_id', $product->id)->count();
+        }
+        return response()->json([
+            'status' => 'success',
+            'message'=> 'Lấy dữ liệu thành công',
+            'data' => [
+                'id' => $id,
+                'total' => count($products),
+                'sold' => $sold,
+                'tag_total' => $tagTotal
+            ]
+        ]);
     }
 }
