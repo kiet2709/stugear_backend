@@ -21,7 +21,8 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $categories = $this->categoryRepository->getAll();
+        $limit = 10;
+        $categories = $this->categoryRepository->getAll($limit);
         return response()->json([
             'status' => 'success',
             'message' => 'get data sucesss',

@@ -133,10 +133,10 @@ abstract class BaseRepository implements RepositoryInterface
         }
     }
 
-    public function getAll()
+    public function getAll($limit)
     {
         try {
-            $result = $this->model->whereNull('deleted_by')->whereNull('deleted_at')->get();
+            $result = $this->model->whereNull('deleted_by')->whereNull('deleted_at')->paginate($limit);
             return $result;
         } catch (\Throwable $th) {
             Log::error($th);

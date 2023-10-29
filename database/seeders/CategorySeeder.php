@@ -14,14 +14,41 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker\Factory::create();
+        $categories = [
+            [
+                'name' => 'Sách',
+                'description' => 'Đây là danh mục chứa các cuốn sách về nhiều chủ đề và lĩnh vực khác nhau.',
+                'created_by' => 1,
+                'updated_by' => 1,
+                'created_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years')),
+                'updated_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years +1 day')),
+            ],
+            [
+                'name' => 'Tài liệu',
+                'description' => 'Đây là danh mục chứa các tài liệu và thông tin liên quan đến nhiều lĩnh vực và chủ đề khác nhau.',
+                'created_by' => 1,
+                'updated_by' => 1,
+                'created_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years')),
+                'updated_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years +1 day')),
+            ],
+            [
+                'name' => 'Linh kiện',
+                'description' => 'Đây là danh mục chứa các linh kiện và phụ tùng liên quan đến nhiều lĩnh vực khác nhau, bao gồm điện tử, cơ khí, công nghiệp, và nhiều lĩnh vực khác.',
+                'created_by' => 1,
+                'updated_by' => 1,
+                'created_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years')),
+                'updated_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years +1 day')),
+            ]
+        ];
 
-        $limit = 10;
-
-        for ($i = 0; $i < $limit; $i++) {
+        foreach ($categories as $category) {
             DB::table('categories')->insert([
-                'name' => $faker->name,
-                'description' => $faker->paragraph,
+                'name' => $category['name'],
+                'description' => $category['description'],
+                'created_by' => $category['created_by'],
+                'updated_by' => $category['updated_by'],
+                'created_at' => $category['created_at'],
+                'updated_at' => $category['updated_at'],
             ]);
         }
     }

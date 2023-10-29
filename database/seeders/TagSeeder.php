@@ -14,8 +14,6 @@ class TagSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker\Factory::create();
-
         $limit = 100;
 
         $colors = [
@@ -27,39 +25,34 @@ class TagSeeder extends Seeder
             'bg-info',
             'bg-light',
             'bg-dark',
-            'bg-white'
+        ];
+
+        $tagNames = [
+            'sach', 'dodung', 'sach', 'tailieu', 'document', 'book', 'electronic',
+            'electron', 'hoc', 'moi', 'cu', 'passlai', 'passgap', 'giare', 'giahatde',
+            'gan', 'xa'
         ];
 
         for ($i = 0; $i < $limit; $i++) {
             DB::table('tags')->insert([
-                'name' => $faker->name,
-                'color' => $faker->randomElement($colors)
+                'name' => $tagNames[array_rand($tagNames)] . rand(1,100),
+                'color' => $colors[array_rand($colors)],
+                'created_by' => rand(1,10),
+                'updated_by' => rand(1,10),
+                'created_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years')),
+                'updated_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years +1 day')),
             ]);
         }
 
         for ($i = 0; $i < $limit; $i++) {
             DB::table('product_tags')->insert([
                 'product_id' => rand(1,20),
-                'tag_id' => $i+1
+                'tag_id' => $i+1,
+                'created_by' => rand(1,10),
+                'updated_by' => rand(1,10),
+                'created_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years')),
+                'updated_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years +1 day')),
             ]);
         }
-        // for ($i = 0; $i < 50; $i++) {
-        //     DB::table('product_tags')->insert([
-        //         'product_id' => rand(5,10),
-        //         'tag_id' => rand(1,100)
-        //     ]);
-        // }
-        // for ($i = 0; $i < 50; $i++) {
-        //     DB::table('product_tags')->insert([
-        //         'product_id' => rand(10,15),
-        //         'tag_id' => rand(1,100)
-        //     ]);
-        // }
-        // for ($i = 0; $i < 50; $i++) {
-        //     DB::table('product_tags')->insert([
-        //         'product_id' => rand(15,20),
-        //         'tag_id' => rand(1,100)
-        //     ]);
-        // }
     }
 }

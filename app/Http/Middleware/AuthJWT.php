@@ -39,7 +39,6 @@ class AuthJWT
                 return $next($request);
 
             } else {
-                // dd($now < $payload->exp);
                 $id = $payload->id;
 
                 $user = User::find($id);

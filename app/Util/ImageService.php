@@ -98,7 +98,9 @@ class ImageService
     public static function getPathImage($id, $tableNameOfImage){
         try {
             $imageId = DB::table($tableNameOfImage)->where('id', $id)->value('image_id');
+
             $path = DB::table('images')->where('id', $imageId)->value('path');
+
             if (!$path){
                 return AppConstant::$ERROR_WITH_IMAGE;
             }

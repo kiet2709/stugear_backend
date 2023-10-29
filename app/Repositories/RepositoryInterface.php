@@ -9,5 +9,5 @@ interface RepositoryInterface
     public function saveMany($attributes, $ids = null);
     public function deleteById($id);
 
-    public function getAll();
+    public function getAll($limit);
 }

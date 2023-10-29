@@ -11,4 +11,9 @@ interface ProductRepositoryInterface extends RepositoryInterface
     public function searchByName($q);
 
     public function attachTag($id, $tags);
+
+    public function getProductByCategoryId($id, $limit);
+    // public function getProductByTagId($id, $limit);
+
+    public function getProductTagsByProductId($id);
 }

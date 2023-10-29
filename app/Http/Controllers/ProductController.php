@@ -34,11 +34,33 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = $this->productRepository->getAll();
+        $limit = 10;
+        $products = $this->productRepository->getAll($limit);
+        $data = [];
+        $memberData = [];
+        foreach ($products as $product) {
+            $memberData['id'] = $product->id;
+            $memberData['title'] = $product->name;
+            $memberData['product_image'] = 'http://127.0.0.1:8000/' . 'api/products/' . $product->id . '/images';
+            $memberData['price'] = $product->price;
+            $memberData['comment_count'] = '';
+            $productTags = $product->productTags;
+            $tags = [];
+            foreach ($productTags as $productTag) {
+                $tagMember['name'] = $productTag->tag->name;
+                $tagMember['color'] = $productTag->tag->color;
+                array_push($tags, $tagMember);
+            }
+            $memberData['tags'] = $tags;
+            $memberData['description'] = $product->description;
+            $memberData['last_updated'] = $product->updated_at ?? '';
+            $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user->id . '/images';;
+            array_push($data, $memberData);
+        }
         return response()->json([
-            'status' => 'success',
-            'message' => 'get data sucesss',
-            'data' => $products
+            'status'=> 'success',
+            'message'=> 'Lấy dữ liệu thành công',
+            'data'=> $data
         ]);
     }
     public function view($id)
@@ -66,6 +88,7 @@ class ProductController extends Controller
                 array_push($tags, $tagMember);
             }
             $memberData['tags'] = $tags;
+            $memberData['description'] = $product->description;
             $memberData['last_updated'] = $product->updated_at ?? '';
             $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user->id . '/images';;
             $memberData['owner_name'] = $product->user->name;
@@ -90,6 +113,7 @@ class ProductController extends Controller
     }
     public function getImage($id) {
         $path = ImageService::getPathImage($id, 'products');
+        // dd(readfile('C:\Users\TUANKIET\Desktop\learn\stugear_backend\public\uploads\products\1.png'));
         if (str_contains($path, 'uploads')){
             header('Content-Type: image/jpeg');
             readfile($path);
@@ -112,8 +136,8 @@ class ProductController extends Controller
     }
 
     public function getProductByCategoryId($id) {
-        $category = $this->categoryRepository->getById($id);
-        $products = $category->products;
+        $limit = 10;
+        $products = $this->productRepository->getProductByCategoryId($id, $limit);
         $data = [];
         $memberData = [];
         foreach ($products as $product) {
@@ -122,16 +146,18 @@ class ProductController extends Controller
             $memberData['product_image'] = 'http://127.0.0.1:8000/' . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
             $memberData['comment_count'] = '';
-            $productTags = $product->productTags;
+            $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
             $tags = [];
             foreach ($productTags as $productTag) {
-                $tagMember['name'] = $productTag->tag->name;
-                $tagMember['color'] = $productTag->tag->color;
+                $tag = $this->tagRepository->getById($productTag->tag_id);
+                $tagMember['name'] = $tag->name;
+                $tagMember['color'] = $tag->color;
                 array_push($tags, $tagMember);
             }
             $memberData['tags'] = $tags;
+            $memberData['description'] = $product->description;
             $memberData['last_updated'] = $product->updated_at ?? '';
-            $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user->id . '/images';;
+            $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user_id . '/images';;
             array_push($data, $memberData);
         }
         return response()->json([
@@ -144,10 +170,11 @@ class ProductController extends Controller
     public function getProductByTagId($id)
     {
         $tag = $this->tagRepository->getById($id);
-        $productTags = $tag->productTags;
+        $productTags = $this->tagRepository->getProductTagsByTagId( $id );
         $products = [];
+        //cần sửa chỗ này
         foreach ($productTags as $productTag) {
-            $product = $productTag->product;
+            $product = $this->productRepository->getById( $productTag->product_id );
             array_push($products, $product);
         }
         $data = [];
@@ -166,6 +193,7 @@ class ProductController extends Controller
                 array_push($tags, $tagMember);
             }
             $memberData['tags'] = $tags;
+            $memberData['description'] = $product->description;
             $memberData['last_updated'] = $product->updated_at ?? '';
             $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user->id . '/images';;
             $memberData['owner_name'] = $product->user->name;

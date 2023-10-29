@@ -4,6 +4,7 @@ namespace App\Repositories\Tag;
 
 use App\Models\Tag;
 use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\DB;
 
 class TagRepository extends BaseRepository implements TagRepositoryInterface
 {
@@ -20,5 +21,12 @@ class TagRepository extends BaseRepository implements TagRepositoryInterface
         } else {
             return false;
         }
+    }
+
+    public function getProductTagsByTagId($id)
+    {
+        $result = DB::table('product_tags')
+        ->where('tag_id', $id)->get();
+        return $result;
     }
 }

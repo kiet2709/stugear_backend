@@ -64,4 +64,19 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         return $result;
     }
 
+    public function getProductByCategoryId($id, $limit)
+    {
+        $result = DB::table('products')
+        ->where('category_id', $id)
+        ->paginate($limit);
+        return $result;
+    }
+
+    public function getProductTagsByProductId($id)
+    {
+        $result = DB::table('product_tags')
+            ->where('product_id', $id)->get();
+        return $result;
+    }
+
 }
