@@ -172,7 +172,7 @@ class ProductController extends Controller
         $tag = $this->tagRepository->getById($id);
         $productTags = $this->tagRepository->getProductTagsByTagId( $id );
         $products = [];
-        //cần sửa chỗ này
+        //cần sửa chỗ này, thêm phân trang cho phù hợp
         foreach ($productTags as $productTag) {
             $product = $this->productRepository->getById( $productTag->product_id );
             array_push($products, $product);

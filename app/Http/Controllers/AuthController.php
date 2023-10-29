@@ -111,6 +111,8 @@ class AuthController extends Controller
                 'updated_by' => $user->id
             ]);
 
+        DB::table('wishlists')->insert(['user_id' => $user->id]);
+
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',

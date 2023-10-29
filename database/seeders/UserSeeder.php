@@ -267,5 +267,9 @@ class UserSeeder extends Seeder
                 'updated_at' => $user_role['updated_at']
             ]);
         }
+
+        for($i = 1; $i <= 10; $i++){
+            DB::table('wishlists')->insert(['user_id' => $i]);
+        }
     }
 }

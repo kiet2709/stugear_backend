@@ -376,5 +376,19 @@ class ProductSeeder extends Seeder
                 'updated_at' => $product['updated_at'],
             ]);
         }
+
+        $wishlist_products = [
+            [1,1],[1,2],[1,3],[2,2],[2,3],[2,4],[3,3],[3,4],[3,5],
+            [4,4],[4,5],[4,6],[5,5],[5,6],[5,7],[6,6],[6,7],[6,8],
+            [7,9],[7,10],[7,2],[8,8],[8,9],[8,10],[9,1],[9,4],[10,1],
+            [10,2],[11,2],[12,2],[13,2],[13,4],[14,4],[15,6]
+        ];
+
+        foreach ($wishlist_products as $wishlist_product) {
+            DB::table('wishlist_products')->insert([
+                'product_id' => $wishlist_product[0],
+                'wishlist_id' => $wishlist_product[1],
+            ]);
+        }
     }
 }
