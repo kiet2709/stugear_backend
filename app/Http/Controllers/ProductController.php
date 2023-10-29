@@ -41,7 +41,7 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = 'http://127.0.0.1:8000/' . 'api/products/' . $product->id . '/images';
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
             $memberData['comment_count'] = '';
             $productTags = $product->productTags;
@@ -54,7 +54,7 @@ class ProductController extends Controller
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;
             $memberData['last_updated'] = $product->updated_at ?? '';
-            $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user->id . '/images';;
+            $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
             array_push($data, $memberData);
         }
         return response()->json([
@@ -77,7 +77,7 @@ class ProductController extends Controller
             $memberData = [];
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = 'http://127.0.0.1:8000/' . 'api/products/' . $product->id . '/images';
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
             $memberData['comment_count'] = '';
             $productTags = $product->productTags;
@@ -90,7 +90,7 @@ class ProductController extends Controller
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;
             $memberData['last_updated'] = $product->updated_at ?? '';
-            $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user->id . '/images';;
+            $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
             $memberData['owner_name'] = $product->user->name;
             $memberData['owner_id'] = $product->user->id;
             $memberData['quantity'] = $product->quantity;
@@ -143,7 +143,7 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = 'http://127.0.0.1:8000/' . 'api/products/' . $product->id . '/images';
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
             $memberData['comment_count'] = '';
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
@@ -157,7 +157,7 @@ class ProductController extends Controller
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;
             $memberData['last_updated'] = $product->updated_at ?? '';
-            $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user_id . '/images';;
+            $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
             array_push($data, $memberData);
         }
         return response()->json([
@@ -182,7 +182,7 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = 'http://127.0.0.1:8000/' . 'api/products/' . $product->id . '/images';
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
             $memberData['comment_count'] = '';
             $productTags = $product->productTags;
@@ -195,7 +195,7 @@ class ProductController extends Controller
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;
             $memberData['last_updated'] = $product->updated_at ?? '';
-            $memberData['owner_image'] = 'http://127.0.0.1:8000/' . 'api/users/' . $product->user->id . '/images';;
+            $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
             $memberData['owner_name'] = $product->user->name;
             $memberData['owner_id'] = $product->user->id;
             $memberData['quantity'] = $product->quantity;

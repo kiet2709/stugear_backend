@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             ContactDetailSeeder::class,
             TagSeeder::class,
             ImageSeeder::class,
+            RatingSeeder::class,
+            CommentSeeder::class,
         ]);
     }
 }

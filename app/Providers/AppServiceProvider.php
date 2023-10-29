@@ -27,6 +27,14 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Tag\TagRepositoryInterface::class,
             \App\Repositories\Tag\TagRepository::class,
         );
+        $this->app->singleton(
+            \App\Repositories\Rating\RatingRepositoryInterface::class,
+            \App\Repositories\Rating\RatingRepository::class,
+        );
+        $this->app->singleton(
+            \App\Repositories\Comment\CommentRepositoryInterface::class,
+            \App\Repositories\Comment\CommentRepository::class,
+        );
     }
 
     /**

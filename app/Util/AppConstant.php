@@ -11,8 +11,10 @@ class AppConstant {
 
     public static $UPLOAD_FAILURE = "Upload fail, please check again!";
 
-    
+
 
     public static $ERROR_WITH_IMAGE = "There're some errors with image!";
+
+    public static $DOMAIN = 'http://127.0.0.1:8000/';
 
 }

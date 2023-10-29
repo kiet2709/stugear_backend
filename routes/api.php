@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\RatingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -64,6 +66,14 @@ Route::controller(UserController::class)->prefix('users')->group(function (){
 Route::controller(TagController::class)->prefix('tags')->group(function (){
     Route::post('/', 'create')->middleware('auth_jwt');
     Route::get('/{id}', 'view');
+});
+
+Route::controller(RatingController::class)->prefix('ratings')->group(function (){
+    Route::get('/product/{id}', 'getRatingByProductId');
+});
+
+Route::controller(CommentController::class)->prefix('comments')->group(function (){
+    Route::get('/product/{id}', 'getCommentByProductId');
 });
 
 
