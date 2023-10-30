@@ -51,6 +51,10 @@ class CommentController extends Controller
             $memberData['sub_comment'] = $subCommentData;
             array_push($data, $memberData);
         }
-        return response()->json($data);
+        return response()->json([
+            'status' => 'Thành công',
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $data
+        ]);
     }
 }
