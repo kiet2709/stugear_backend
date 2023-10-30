@@ -21,12 +21,20 @@ class CategoryController extends Controller
 
     public function index()
     {
-        $limit = 10;
-        $categories = $this->categoryRepository->getAll($limit);
+        $categories = Category::all();
+        $data = [];
+        $memberData = [];
+        foreach ($categories as $category) {
+            $memberData['id'] = $category->id;
+            $memberData['name'] = $category->name;
+            $memberData['description'] = $category->description;
+            $memberData['image'] = AppConstant::$DOMAIN . '/api/categories/' . $category->image_id . '/images';
+            array_push($data, $memberData);
+        }
         return response()->json([
             'status' => 'success',
             'message' => 'get data sucesss',
-            'data' => $categories
+            'data' => $data
         ]);
     }
 

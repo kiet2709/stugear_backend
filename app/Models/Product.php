@@ -59,6 +59,11 @@ class Product extends Model
         return Carbon::parse($value)->format('d/m/Y');
     }
 
+    public function getStatusAttribute($value)
+    {
+        return $value == 1 ? 'Còn hàng' : 'Hết hàng';
+    }
+
     public function category() {
         return $this->belongsTo(Category::class);
     }

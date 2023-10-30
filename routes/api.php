@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -72,8 +73,13 @@ Route::controller(RatingController::class)->prefix('ratings')->group(function ()
     Route::get('/product/{id}', 'getRatingByProductId');
 });
 
-Route::controller(CommentController::class)->prefix('comments')->group(function (){
-    Route::get('/product/{id}', 'getCommentByProductId');
+Route::controller(CommentController::class)->group(function (){
+    Route::get('/products/{id}/comments', 'getCommentByProductId');
+});
+
+Route::controller(WishlistController::class)->prefix('wishlists')->group(function (){
+    Route::get('/user/{id}', 'getWishlistByUserId');
+    Route::post('/', 'addProductToWishlist');
 });
 
 

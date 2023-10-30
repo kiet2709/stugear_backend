@@ -23,10 +23,10 @@ class TagRepository extends BaseRepository implements TagRepositoryInterface
         }
     }
 
-    public function getProductTagsByTagId($id)
+    public function getProductTagsByTagId($id, $limit)
     {
         $result = DB::table('product_tags')
-        ->where('tag_id', $id)->get();
+        ->where('tag_id', $id)->paginate($limit);
         return $result;
     }
 }

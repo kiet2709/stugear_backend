@@ -46,7 +46,6 @@ class CommentController extends Controller
                 $user = $this->userRepository->getById($subComment->reply_on);
                 $subCommentMember['reply_on'] = $user->name;
                 $subCommentMember['last_updated'] = Carbon::parse($subComment->updated_at)->diffForHumans(Carbon::now());
-                // dd($subCommentMember);
                 array_push($subCommentData, $subCommentMember);
             }
             $memberData['sub_comment'] = $subCommentData;

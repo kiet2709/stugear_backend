@@ -35,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Repositories\Comment\CommentRepositoryInterface::class,
             \App\Repositories\Comment\CommentRepository::class,
         );
+        $this->app->singleton(
+            \App\Repositories\Wishlist\WishlistRepositoryInterface::class,
+            \App\Repositories\Wishlist\WishlistRepository::class,
+        );
     }
 
     /**

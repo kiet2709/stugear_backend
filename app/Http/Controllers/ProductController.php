@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Repositories\Category\CategoryRepositoryInterface;
+use App\Repositories\Comment\CommentRepositoryInterface;
 use App\Repositories\Product\ProductRepositoryInterface;
 use App\Repositories\Tag\TagRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
@@ -20,19 +21,22 @@ class ProductController extends Controller
     protected $categoryRepository;
     protected $tagRepository;
     protected $userRepository;
+    protected $commentRepository;
 
     public function __construct(ProductRepositoryInterface $productRepository,
         CategoryRepositoryInterface $categoryRepository,
         TagRepositoryInterface $tagRepository,
-        UserRepositoryInterface $userRepository)
+        UserRepositoryInterface $userRepository,
+        CommentRepositoryInterface $commentRepository)
     {
         $this->productRepository = $productRepository;
         $this->categoryRepository = $categoryRepository;
         $this->tagRepository = $tagRepository;
         $this->userRepository = $userRepository;
+        $this->commentRepository = $commentRepository;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $limit = 10;
         $products = $this->productRepository->getAll($limit);
@@ -43,7 +47,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
-            $memberData['comment_count'] = '';
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
             $productTags = $product->productTags;
             $tags = [];
             foreach ($productTags as $productTag) {
@@ -53,14 +57,19 @@ class ProductController extends Controller
             }
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;
+            $memberData['status'] = $product->status;
             $memberData['last_updated'] = $product->updated_at ?? '';
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
             array_push($data, $memberData);
         }
+
         return response()->json([
             'status'=> 'success',
             'message'=> 'Lấy dữ liệu thành công',
-            'data'=> $data
+            'data'=> $data,
+            'page' => $request->page,
+            'total_page' => $products->lastPage(),
+            'total_items' => $products->total()
         ]);
     }
     public function view($id)
@@ -79,7 +88,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
-            $memberData['comment_count'] = '';
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
             $productTags = $product->productTags;
             $tags = [];
             foreach ($productTags as $productTag) {
@@ -89,6 +98,7 @@ class ProductController extends Controller
             }
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;
+            $memberData['status'] = $product->status;
             $memberData['last_updated'] = $product->updated_at ?? '';
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
             $memberData['owner_name'] = $product->user->name;
@@ -113,7 +123,6 @@ class ProductController extends Controller
     }
     public function getImage($id) {
         $path = ImageService::getPathImage($id, 'products');
-        // dd(readfile('C:\Users\TUANKIET\Desktop\learn\stugear_backend\public\uploads\products\1.png'));
         if (str_contains($path, 'uploads')){
             header('Content-Type: image/jpeg');
             readfile($path);
@@ -135,7 +144,7 @@ class ProductController extends Controller
 
     }
 
-    public function getProductByCategoryId($id) {
+    public function getProductByCategoryId(Request $request, $id) {
         $limit = 10;
         $products = $this->productRepository->getProductByCategoryId($id, $limit);
         $data = [];
@@ -145,7 +154,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
-            $memberData['comment_count'] = '';
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
             $tags = [];
             foreach ($productTags as $productTag) {
@@ -156,6 +165,7 @@ class ProductController extends Controller
             }
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;
+            $memberData['status'] = $product->status;
             $memberData['last_updated'] = $product->updated_at ?? '';
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
             array_push($data, $memberData);
@@ -163,16 +173,19 @@ class ProductController extends Controller
         return response()->json([
             'status'=> 'success',
             'message'=> 'Lấy dữ liệu thành công',
-            'data'=> $data
+            'data'=> $data,
+            'page' => $request->page,
+            'total_page' => $products->lastPage(),
+            'total_items' => $products->total()
         ]);
     }
 
-    public function getProductByTagId($id)
+    public function getProductByTagId(Request $request, $id)
     {
-        $tag = $this->tagRepository->getById($id);
-        $productTags = $this->tagRepository->getProductTagsByTagId( $id );
+        $limit = 1;
+        $productTags = $this->tagRepository->getProductTagsByTagId( $id, $limit );
+        dd($productTags);
         $products = [];
-        //cần sửa chỗ này, thêm phân trang cho phù hợp
         foreach ($productTags as $productTag) {
             $product = $this->productRepository->getById( $productTag->product_id );
             array_push($products, $product);
@@ -184,7 +197,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
-            $memberData['comment_count'] = '';
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
             $productTags = $product->productTags;
             $tags = [];
             foreach ($productTags as $productTag) {
@@ -194,6 +207,7 @@ class ProductController extends Controller
             }
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;
+            $memberData['status'] = $product->status;
             $memberData['last_updated'] = $product->updated_at ?? '';
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
             $memberData['owner_name'] = $product->user->name;
@@ -206,7 +220,10 @@ class ProductController extends Controller
         return response()->json([
             'status'=> 'success',
             'message'=> 'Lấy dữ liệu thành công',
-            'data'=> $data
+            'data'=> $data,
+            'page' => $request->page,
+            'total_page' => $productTags->lastPage(),
+            'total_items' => $productTags->total()
         ]);
     }
 
