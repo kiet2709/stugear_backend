@@ -69,7 +69,7 @@ class ProductController extends Controller
             'data'=> $data,
             'page' => $request->page,
             'total_page' => $products->lastPage(),
-            'total_items' => $products->total()
+            'total_items' => count($products)
         ]);
     }
     public function view($id)
@@ -153,7 +153,7 @@ class ProductController extends Controller
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
-            $memberData['price'] = $product->price;
+            $memberData['price'] = number_format($product->price) . 'VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
             $tags = [];
@@ -166,7 +166,7 @@ class ProductController extends Controller
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;
             $memberData['status'] = $product->status;
-            $memberData['last_updated'] = $product->updated_at ?? '';
+            $memberData['last_updated'] = Carbon::parse($product->updated_at)->format('d/m/Y');
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
             array_push($data, $memberData);
         }
@@ -176,15 +176,16 @@ class ProductController extends Controller
             'data'=> $data,
             'page' => $request->page,
             'total_page' => $products->lastPage(),
-            'total_items' => $products->total()
+            'total_items' => count($products)
         ]);
     }
 
     public function getProductByTagId(Request $request, $id)
     {
-        $limit = 1;
+        $limit = 10;
         $productTags = $this->tagRepository->getProductTagsByTagId( $id, $limit );
-        dd($productTags);
+        $total_page = $productTags->lastPage();
+        $total_items = count($productTags);
         $products = [];
         foreach ($productTags as $productTag) {
             $product = $this->productRepository->getById( $productTag->product_id );
@@ -222,8 +223,8 @@ class ProductController extends Controller
             'message'=> 'Lấy dữ liệu thành công',
             'data'=> $data,
             'page' => $request->page,
-            'total_page' => $productTags->lastPage(),
-            'total_items' => $productTags->total()
+            'total_page' => $total_page,
+            'total_items' => $total_items
         ]);
     }
 
