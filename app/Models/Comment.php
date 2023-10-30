@@ -9,6 +9,19 @@ use Illuminate\Database\Eloquent\Model;
 class Comment extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'content',
+        'owner_id',
+        'parent_id',
+        'product_id',
+        'reply_on',
+        'created_at',
+        'created_by',
+        'updated_at',
+        'updated_by',
+        'deleted_at',
+        'deleted_by'
+    ];
     protected $hidden = [
         'created_at',
         'created_by',

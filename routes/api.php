@@ -75,6 +75,7 @@ Route::controller(RatingController::class)->prefix('ratings')->group(function ()
 
 Route::controller(CommentController::class)->group(function (){
     Route::get('/products/{id}/comments', 'getCommentByProductId');
+    Route::post('/products/{id}/comments', 'create');
 });
 
 Route::controller(WishlistController::class)->prefix('wishlists')->group(function (){

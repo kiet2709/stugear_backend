@@ -83,30 +83,31 @@ class ProductController extends Controller
             ], 404);
         } else {
             $data = [];
-            $memberData = [];
-            $memberData['id'] = $product->id;
-            $memberData['title'] = $product->name;
-            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
-            $memberData['price'] = $product->price;
-            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
+            $data['id'] = $product->id;
+            $data['title'] = $product->name;
+            $data['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
+            $data['price'] = $product->price;
+            $data['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
             $productTags = $product->productTags;
             $tags = [];
+            $count = 0;
             foreach ($productTags as $productTag) {
+                if ($count == 3) break;
                 $tagMember['name'] = $productTag->tag->name;
                 $tagMember['color'] = $productTag->tag->color;
                 array_push($tags, $tagMember);
+                $count++;
             }
-            $memberData['tags'] = $tags;
-            $memberData['description'] = $product->description;
-            $memberData['status'] = $product->status;
-            $memberData['last_updated'] = $product->updated_at ?? '';
-            $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
-            $memberData['owner_name'] = $product->user->name;
-            $memberData['owner_id'] = $product->user->id;
-            $memberData['quantity'] = $product->quantity;
-            $memberData['condition'] = $product->status == 0 ? 'Mới' : 'Đã sử dụng';
-            $memberData['transaction_method'] = $product->transaction_id == 0 ? 'Trực tiếp' : 'Trên trang web';
-            array_push($data, $memberData);
+            $data['tags'] = $tags;
+            $data['description'] = $product->description;
+            $data['status'] = $product->status;
+            $data['last_updated'] = $product->updated_at ?? '';
+            $data['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
+            $data['owner_name'] = $product->user->name;
+            $data['owner_id'] = $product->user->id;
+            $data['quantity'] = $product->quantity;
+            $data['condition'] = $product->status == 0 ? 'Mới' : 'Đã sử dụng';
+            $data['transaction_method'] = $product->transaction_id == 0 ? 'Trực tiếp' : 'Trên trang web';
             return response()->json([
                 'status'=> 'success',
                 'message'=> 'Lấy dữ liệu thành công',
@@ -157,11 +158,14 @@ class ProductController extends Controller
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
             $tags = [];
+            $count = 0;
             foreach ($productTags as $productTag) {
+                if ($count == 3) break;
                 $tag = $this->tagRepository->getById($productTag->tag_id);
                 $tagMember['name'] = $tag->name;
                 $tagMember['color'] = $tag->color;
                 array_push($tags, $tagMember);
+                $count++;
             }
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description;

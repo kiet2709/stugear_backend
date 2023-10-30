@@ -7,6 +7,7 @@ use App\Repositories\User\UserRepositoryInterface;
 use Carbon\Carbon;
 use App\Util\AppConstant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CommentController extends Controller
 {
@@ -56,5 +57,45 @@ class CommentController extends Controller
             'message' => 'Lấy dữ liệu thành công',
             'data' => $data
         ]);
+    }
+
+    public function create(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|integer|min:1',
+            'product_id' => 'required|integer|min:1',
+            'parent_id' => 'required|integer|min:0',
+            'reply_on' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+             return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $result = $this->commentRepository->save([
+            'content' => $request->input('content'),
+            'owner_id' => $request->input('user_id'),
+            'parent_id' => $request->input('parent_id'),
+            'product_id' => $request->input('product_id'),
+            'reply_on' => $request->input('reply_on'),
+            'vote' => 0,
+            'created_by' => $request->input('user_id'),
+            'updated_by' => $request->input('user_id'),
+            'created_at' => Carbon::now(),
+            'updated_at'=> Carbon::now()
+        ]);
+
+        if ($result) {
+            return response()->json([
+                'status'=> 'Thành công',
+                'message' => 'Comment thành công',
+            ]);
+        } else {
+            return response()->json([
+                'status'=> 'Thất bại',
+                'message' => 'Comment thất bại',
+            ],500);
+        }
+
     }
 }
