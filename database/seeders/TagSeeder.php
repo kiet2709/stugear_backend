@@ -23,7 +23,6 @@ class TagSeeder extends Seeder
             'bg-danger',
             'bg-warning',
             'bg-info',
-            'bg-light',
             'bg-dark',
         ];
 
