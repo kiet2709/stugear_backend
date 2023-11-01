@@ -95,7 +95,7 @@ class CommentController extends Controller
             'product_id' => 'required|integer|min:1',
             'parent_id' => 'required|integer|min:0',
             'reply_on' => 'required|integer|min:0',
-            'rating' => 'required|integer|between:1,5'
+            'rating' => 'required|integer|between:0,5'
         ]);
 
         if ($validator->fails()) {
