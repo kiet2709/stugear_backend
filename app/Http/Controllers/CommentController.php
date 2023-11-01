@@ -26,10 +26,11 @@ class CommentController extends Controller
         $this->ratingRepository = $ratingRepository;
     }
 
-    public function getCommentByProductId($productId)
+    public function getCommentByProductId(Request $request, $productId)
     {
+        $limit = $request->limit ?? 10;
         Carbon::setLocale('vi');
-        $comments = $this->commentRepository->getCommentByProductId($productId);
+        $comments = $this->commentRepository->getCommentByProductId($productId, $limit);
         $data = [];
         $memberData = [];
         foreach ($comments as $comment) {
@@ -61,7 +62,6 @@ class CommentController extends Controller
                 $subCommentMember['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $subComment->owner_id . '/images';
                 $subCommentMember['content'] = $subComment->content;
                 $subCommentMember['vote'] = $subComment->vote;
-                $subCommentMember['rating'] = $subComment->rating_id;
                 if ($subComment->reply_on != 0) {
                     $user = $this->userRepository->getById($subComment->reply_on);
                     $subCommentMember['reply_on'] = $user->name;
@@ -74,6 +74,9 @@ class CommentController extends Controller
             $memberData['sub_comment'] = $subCommentData;
             array_push($data, $memberData);
         }
+        $data['page'] = '';
+        $data['total_page'] = '';
+        $data['total_items'] = '';
         return response()->json([
             'status' => 'Thành công',
             'message' => 'Lấy dữ liệu thành công',

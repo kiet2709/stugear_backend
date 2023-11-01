@@ -46,12 +46,12 @@ class AuthJWT
                     return response()->json([
                         'status' => 'warning',
                         'message' => 'Hãy refresh token'
-                    ],401);
+                    ],403);
                 } else {
                     return response()->json([
                         'status' => 'error',
                         'message' => 'Refresh token hết hạn, vui lòng đăng nhập lại!'
-                    ],401);
+                    ],403);
                 }
             }
         } else {

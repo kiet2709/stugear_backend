@@ -14,10 +14,10 @@ class CommentRepository extends BaseRepository implements CommentRepositoryInter
         return Comment::class;
     }
 
-    public function getCommentByProductId($id)
+    public function getCommentByProductId($id, $limit)
     {
         $result = DB::table('comments')
-            ->where('product_id', $id )->get();
+            ->where('product_id', $id )->paginate( $limit );
         return $result;
     }
 

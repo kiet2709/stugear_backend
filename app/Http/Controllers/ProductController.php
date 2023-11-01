@@ -38,7 +38,7 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $limit = 10;
+        $limit = $request->limit ?? 10;
         $products = $this->productRepository->getAll($limit);
         $data = [];
         $memberData = [];
@@ -47,7 +47,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
-            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $product->productTags;
             $tags = [];
             foreach ($productTags as $productTag) {
@@ -87,7 +87,7 @@ class ProductController extends Controller
             $data['title'] = $product->name;
             $data['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $data['price'] = $product->price;
-            $data['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
+            $data['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
             $tags = [];
             $count = 0;
@@ -146,7 +146,7 @@ class ProductController extends Controller
     }
 
     public function getProductByCategoryId(Request $request, $id) {
-        $limit = 10;
+        $limit = $request->limit ?? 10;
         $products = $this->productRepository->getProductByCategoryId($id, $limit);
         $data = [];
         $memberData = [];
@@ -155,7 +155,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = number_format($product->price) . ' VNĐ';
-            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
             $tags = [];
             $count = 0;
@@ -186,7 +186,7 @@ class ProductController extends Controller
 
     public function getProductByTagId(Request $request, $id)
     {
-        $limit = 10;
+        $limit = $request->limit ?? 10;
         $productTags = $this->tagRepository->getProductTagsByTagId( $id, $limit );
         $total_page = $productTags->lastPage();
         $total_items = count($productTags);
@@ -202,7 +202,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
-            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
             $tags = [];
             foreach ($productTags as $productTag) {

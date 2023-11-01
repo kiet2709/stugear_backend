@@ -6,7 +6,7 @@ use App\Repositories\RepositoryInterface;
 
 interface CommentRepositoryInterface extends RepositoryInterface
 {
-    public function getCommentByProductId($id);
+    public function getCommentByProductId($id, $limit);
 
     public function getCommentByParentId($id);
 
