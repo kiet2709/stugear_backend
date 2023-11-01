@@ -27,4 +27,14 @@ class CommentRepository extends BaseRepository implements CommentRepositoryInter
         ->where('parent_id', $id )->get();
         return $result;
     }
+
+    public function getCommentWithParentIdZeroByProductId($id, $limit)
+    {
+        $result = DB::table('comments')
+            ->where('product_id', $id )
+            ->where('parent_id', 0 )
+            ->paginate( $limit );
+        return $result;
+    }
+
 }

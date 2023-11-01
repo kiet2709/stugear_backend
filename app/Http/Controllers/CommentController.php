@@ -28,9 +28,9 @@ class CommentController extends Controller
 
     public function getCommentByProductId(Request $request, $productId)
     {
-        $limit = $request->limit ?? 10;
+        $limit = $request->limit ?? 5;
         Carbon::setLocale('vi');
-        $comments = $this->commentRepository->getCommentByProductId($productId, $limit);
+        $comments = $this->commentRepository->getCommentWithParentIdZeroByProductId($productId, $limit);
         $data = [];
         $memberData = [];
         foreach ($comments as $comment) {
@@ -74,13 +74,14 @@ class CommentController extends Controller
             $memberData['sub_comment'] = $subCommentData;
             array_push($data, $memberData);
         }
-        $data['page'] = '';
-        $data['total_page'] = '';
-        $data['total_items'] = '';
+
         return response()->json([
             'status' => 'Thành công',
             'message' => 'Lấy dữ liệu thành công',
-            'data' => $data
+            'data' => $data,
+            'page' => $request->page ?? 1,
+            'total_page' => $comments->lastPage(),
+            'total_items' => count($comments)
         ]);
     }
 
@@ -99,6 +100,20 @@ class CommentController extends Controller
 
         if ($validator->fails()) {
              return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        if ($request->parent_id != 0 && $request->rating != 0) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message' => 'Khi reply không được rating'
+            ], 500);
+        }
+
+        if ($request->parent_id == 0 && $request->rating == 0) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message' => 'Khi comment phải rating, chỉ reply comment là không rating!'
+            ], 500);
         }
 
         $this->ratingRepository->rating($request->product_id, $request->rating, $userId);

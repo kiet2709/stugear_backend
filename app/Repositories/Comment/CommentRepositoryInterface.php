@@ -10,4 +10,6 @@ interface CommentRepositoryInterface extends RepositoryInterface
 
     public function getCommentByParentId($id);
 
+    public function getCommentWithParentIdZeroByProductId($id, $limit);
+
 }
