@@ -45,4 +45,10 @@ class WishlistRepository extends BaseRepository implements WishlistRepositoryInt
             ->update($data);
         return $results;
     }
+
+    public function getWishlistIdByUserId($userId)
+    {
+        $result = $this->model->where('user_id', $userId)->first();
+        return $result->id;
+    }
 }

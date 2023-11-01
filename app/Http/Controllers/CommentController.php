@@ -44,6 +44,12 @@ class CommentController extends Controller
             $memberData['content'] = $comment->content;
             $memberData['vote'] = $comment->vote;
             $memberData['rating'] = $comment->rating_id;
+            if ($comment->reply_on != 0) {
+                $user = $this->userRepository->getById($comment->reply_on);
+                $memberData['reply_on'] = $user->name;
+            } else {
+                $memberData['reply_on'] = '';
+            }
             $memberData['last_updated'] = Carbon::parse($comment->updated_at)->diffForHumans(Carbon::now());
             $subCommentData = [];
             $subCommentMember = [];
@@ -56,8 +62,12 @@ class CommentController extends Controller
                 $subCommentMember['content'] = $subComment->content;
                 $subCommentMember['vote'] = $subComment->vote;
                 $subCommentMember['rating'] = $subComment->rating_id;
-                $user = $this->userRepository->getById($subComment->reply_on);
-                $subCommentMember['reply_on'] = $user->name;
+                if ($subComment->reply_on != 0) {
+                    $user = $this->userRepository->getById($subComment->reply_on);
+                    $subCommentMember['reply_on'] = $user->name;
+                } else {
+                    $subCommentMember['reply_on'] = '';
+                }
                 $subCommentMember['last_updated'] = Carbon::parse($subComment->updated_at)->diffForHumans(Carbon::now());
                 array_push($subCommentData, $subCommentMember);
             }

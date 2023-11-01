@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\Product\ProductRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\Wishlist\WishlistRepositoryInterface;
+use App\Util\AuthService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -23,10 +24,14 @@ class WishlistController extends Controller
         $this->userRepository = $userRepository;
     }
 
-    public function getWishlistByUserId($id)
+    public function getWishlistByUserId(Request $request)
     {
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
         $limit = 10;
-        $wishlist_products = $this->wishlistRepository->getWishlistByUserId($id, $limit);
+        $wishlist_products = $this->wishlistRepository->getWishlistByUserId($userId, $limit);
         $data = [];
         $memberData = [];
         foreach ($wishlist_products as $wishlist_product) {
@@ -49,13 +54,9 @@ class WishlistController extends Controller
 
     public function addProductToWishlist(Request $request)
     {
-        $user = $this->userRepository->getById($request->user_id);
-        if (! $user) {
-            return response()->json([
-                'error'=> 'Có lỗi',
-                'message' => 'Không tìm thấy người dùng'
-            ], 404);
-        }
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
 
         $product = $this->productRepository->getById($request->product_id);
         if (! $product || $product->deleted_at != null || $product->deleted_by != null) {
@@ -65,8 +66,9 @@ class WishlistController extends Controller
             ], 404);
         }
 
-        $wishlist_products = $this->wishlistRepository->getWishlistByUserId($request->user_id, 100000);
-        $wishlishId = $wishlist_products->first()->wishlist_id;
+        $wishlist_products = $this->wishlistRepository->getWishlistByUserId($userId, 100000);
+        $wishlistId = $this->wishlistRepository->getWishlistIdByUserId($userId);
+
         foreach ($wishlist_products as $wishlist_product) {
             $product = $this->productRepository->getById($wishlist_product->product_id);
             if ($wishlist_product->product_id == $request->product_id && ($product->deleted_at != null || $product->deleted_by != null)) {
@@ -76,11 +78,11 @@ class WishlistController extends Controller
                 ], 500);
             } else {
                 $result = $this->wishlistRepository->updateWishlist([
-                    'updated_by' => $request->user_id,
+                    'updated_by' => $userId,
                     'updated_at'=> Carbon::now(),
                     'deleted_by' => null,
                     'deleted_at' => null
-                ], $product->id, $wishlishId);
+                ], $product->id, $wishlistId);
                 if ($result) {
                     return response()->json([
                         'success'=> 'Thành công',
@@ -96,10 +98,10 @@ class WishlistController extends Controller
         }
 
         $result = $this->wishlistRepository->addToWishlist([
-            'wishlist_id'=> $wishlishId,
+            'wishlist_id'=> $wishlistId,
             'product_id'=> $product->id,
-            'created_by' => $request->user_id,
-            'updated_by' => $request->user_id,
+            'created_by' => $userId,
+            'updated_by' => $userId,
             'created_at' => Carbon::now(),
             'updated_at'=> Carbon::now()
         ]);
@@ -115,8 +117,12 @@ class WishlistController extends Controller
             ], 500);
         }
     }
-    public function remove(Request $request, $id)
+    public function remove(Request $request)
     {
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
         $product = $this->productRepository->getById($request->product_id);
         if (! $product || $product->deleted_at != null || $product->deleted_by != null) {
             return response()->json([
@@ -125,8 +131,8 @@ class WishlistController extends Controller
             ], 404);
         }
 
-        $wishlish = $this->wishlistRepository->getById($id);
-        $wishlist_product = $this->wishlistRepository->getWishlistByIdAndProductId($id, $request->product_id);
+        $wishlish = $this->wishlistRepository->getById($userId);
+        $wishlist_product = $this->wishlistRepository->getWishlistByIdAndProductId($userId, $request->product_id);
         if (! $wishlist_product || $wishlist_product->deleted_at != null || $wishlist_product->deleted_by != null){
             return response()->json([
                 'error'=> 'Có lỗi',
@@ -139,7 +145,7 @@ class WishlistController extends Controller
             'updated_at'=> Carbon::now(),
             'deleted_by' => $wishlish->user_id,
             'deleted_at' => Carbon::now()
-        ], $request->product_id, $id);
+        ], $request->product_id, $userId);
 
         if ($result) {
             return response()->json([

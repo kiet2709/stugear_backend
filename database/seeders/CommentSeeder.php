@@ -50,34 +50,103 @@ class CommentSeeder extends Seeder
         ];
 
 
-        for ($i = 0; $i < 100; $i++) {
-            $content = $contents[$faker->numberBetween(0, count($contents) -1)];
-            $vote = $faker->numberBetween(1, 5);
-            $product_id = $faker->numberBetween(1, 20);
-            $parent_id = $faker->numberBetween(0, 90);
+        // for ($i = 0; $i < 100; $i++) {
+        //     $content = $contents[$faker->numberBetween(0, count($contents) -1)];
+        //     $vote = $faker->numberBetween(1, 5);
+        //     $product_id = $faker->numberBetween(1, 20);
+        //     $parent_id = $faker->numberBetween(0, 90);
 
-            $owner_id = $faker->numberBetween(2, 10);
-            $reply_on = $faker->numberBetween(2, 10);
-            $rating_id = $faker->numberBetween(0,5);
+        //     $owner_id = $faker->numberBetween(2, 10);
+        //     $reply_on = $faker->numberBetween(2, 10);
+        //     $rating_id = $faker->numberBetween(0,5);
 
-            $created_at = $faker->dateTimeThisDecade;
-            $updated_at = $faker->dateTimeThisDecade;
-            $created_by = $owner_id;
-            $updated_by = $owner_id;
+        //     $created_at = $faker->dateTimeThisDecade;
+        //     $updated_at = $faker->dateTimeThisDecade;
+        //     $created_by = $owner_id;
+        //     $updated_by = $owner_id;
 
-            DB::table('comments')->insert([
-                'content' => $content,
-                'vote' => $vote,
-                'parent_id' => $parent_id,
-                'product_id' => $product_id,
-                'owner_id' => $owner_id,
-                'reply_on' => $reply_on,
-                'rating_id' => $rating_id,
-                'created_by' => $created_by,
-                'created_at' => $created_at,
-                'updated_by' => $updated_by,
-                'updated_at' => $updated_at,
-            ]);
+        //     DB::table('comments')->insert([
+        //         'content' => $content,
+        //         'vote' => $vote,
+        //         'parent_id' => $parent_id,
+        //         'product_id' => $product_id,
+        //         'owner_id' => $owner_id,
+        //         'reply_on' => $reply_on,
+        //         'rating_id' => $rating_id,
+        //         'created_by' => $created_by,
+        //         'created_at' => $created_at,
+        //         'updated_by' => $updated_by,
+        //         'updated_at' => $updated_at,
+        //     ]);
+        // }
+
+        $parentIdStart = 1;
+        $parentIdEnd = 5;
+        $contentIndex = 0;
+
+        for ($productId = 1; $productId<=20; $productId++) {
+
+
+
+            for ($i = 1; $i<=5; $i++ ) {
+                $vote = rand(1, 5);
+                $owner_id = rand(2, 10);
+                $rating_id = rand(0,5);
+                $reply_on = rand(0, 10);
+                $created_at = $faker->dateTimeThisDecade;
+                $updated_at = $faker->dateTimeThisDecade;
+                $created_by = $owner_id;
+                $updated_by = $owner_id;
+                if ($contentIndex == count($contents)) {
+                    $contentIndex = 0;
+                }
+                DB::table('comments')->insert([
+                    'content' => $contents[$contentIndex++],
+                    'vote' => $vote,
+                    'parent_id' => 0,
+                    'product_id' => $productId,
+                    'owner_id' => $owner_id,
+                    'reply_on' => $reply_on,
+                    'rating_id' => $rating_id,
+                    'created_by' => $created_by,
+                    'created_at' => $created_at,
+                    'updated_by' => $updated_by,
+                    'updated_at' => $updated_at,
+                ]);
+            }
+
+            for ($i = 1; $i<= 15; $i++ ) {
+                $vote = rand(1, 5);
+                $owner_id = rand(2, 10);
+                $rating_id = rand(0,5);
+                $reply_on = rand(0, 10);
+                $created_at = $faker->dateTimeThisDecade;
+                $updated_at = $faker->dateTimeThisDecade;
+                $created_by = $owner_id;
+                $updated_by = $owner_id;
+                if ($contentIndex == count($contents)) {
+                    $contentIndex = 0;
+                }
+                DB::table('comments')->insert([
+                    'content' => $contents[$contentIndex++],
+                    'vote' => $vote,
+                    'parent_id' => rand($parentIdStart,$parentIdEnd),
+                    'product_id' => $productId,
+                    'owner_id' => $owner_id,
+                    'reply_on' => $reply_on,
+                    'rating_id' => $rating_id,
+                    'created_by' => $created_by,
+                    'created_at' => $created_at,
+                    'updated_by' => $updated_by,
+                    'updated_at' => $updated_at,
+                ]);
+            }
+
+            $parentIdStart = $parentIdStart + 20;
+            $parentIdEnd = $parentIdEnd + 20;
         }
+
+
+
     }
 }

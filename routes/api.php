@@ -32,7 +32,7 @@ Route::controller(AuthController::class)->prefix('auth')->group(function (){
 Route::controller(CategoryController::class)->prefix('categories')->group(function (){
     Route::get('/', 'index');
     Route::get('/{id}', 'view');
-    Route::post('/{id}/upload-image', 'uploadImage')->middleware('admin_permission');
+    Route::post('/{id}/upload-image', 'uploadImage');//->middleware('admin_permission');
     Route::get('/{id}/images', 'getImage');
     Route::get('/{id}/statistic','getStatisticByCategory');
 });
@@ -79,9 +79,9 @@ Route::controller(CommentController::class)->group(function (){
 });
 
 Route::controller(WishlistController::class)->group(function (){
-    Route::get('/user/{id}/wishlists', 'getWishlistByUserId');
-    Route::post('/wishlists', 'addProductToWishlist');
-    Route::patch('/remove/{id}', 'remove');
+    Route::get('/users/wishlists', 'getWishlistByUserId')->middleware('auth_jwt');
+    Route::post('/wishlists', 'addProductToWishlist')->middleware('auth_jwt');
+    Route::delete('/wishlists/remove', 'remove')->middleware('auth_jwt');
 });
 
 
