@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Repositories\Product\ProductRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
 use App\Repositories\Wishlist\WishlistRepositoryInterface;
+use App\Util\AppConstant;
 use App\Util\AuthService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -42,6 +43,7 @@ class WishlistController extends Controller
             $memberData['id'] = $wishlist_product->product_id;
             $memberData['name'] = $product->name;
             $memberData['price'] = $product->price;
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['status'] = $product->status;
             array_push($data, $memberData);
         }
