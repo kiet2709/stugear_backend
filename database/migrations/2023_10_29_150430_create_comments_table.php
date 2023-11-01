@@ -20,7 +20,8 @@ return new class extends Migration
             $table->foreign('owner_id')->references('id')->on('users');
             $table->unsignedBigInteger('product_id')->nullable();
             $table->foreign('product_id')->references('id')->on('products');
-            $table->unsignedBigInteger('reply_on')->nullable();
+            $table->unsignedBigInteger('reply_on')->default(0);
+            $table->unsignedBigInteger('rating_id')->default(0);
             $table->integer('created_by')->nullable();
             $table->dateTime('created_at')->nullable();
             $table->integer('updated_by')->nullable();

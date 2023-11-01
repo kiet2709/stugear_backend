@@ -154,7 +154,7 @@ class ProductController extends Controller
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
-            $memberData['price'] = number_format($product->price) . 'VNĐ';
+            $memberData['price'] = number_format($product->price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
             $tags = [];

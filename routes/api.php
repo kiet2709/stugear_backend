@@ -69,18 +69,19 @@ Route::controller(TagController::class)->prefix('tags')->group(function (){
     Route::get('/{id}', 'view');
 });
 
-Route::controller(RatingController::class)->prefix('ratings')->group(function (){
-    Route::get('/product/{id}', 'getRatingByProductId');
+Route::controller(RatingController::class)->group(function (){
+    Route::get('/products/{id}/ratings', 'getRatingByProductId');
 });
 
 Route::controller(CommentController::class)->group(function (){
     Route::get('/products/{id}/comments', 'getCommentByProductId');
-    Route::post('/products/{id}/comments', 'create');
+    Route::post('/products/{id}/comments', 'create')->middleware('auth_jwt');
 });
 
-Route::controller(WishlistController::class)->prefix('wishlists')->group(function (){
-    Route::get('/user/{id}', 'getWishlistByUserId');
-    Route::post('/', 'addProductToWishlist');
+Route::controller(WishlistController::class)->group(function (){
+    Route::get('/user/{id}/wishlists', 'getWishlistByUserId');
+    Route::post('/wishlists', 'addProductToWishlist');
+    Route::patch('/remove/{id}', 'remove');
 });
 
 

@@ -15,6 +15,7 @@ class Comment extends Model
         'parent_id',
         'product_id',
         'reply_on',
+        'rating_id',
         'created_at',
         'created_by',
         'updated_at',

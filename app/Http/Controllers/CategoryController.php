@@ -28,7 +28,7 @@ class CategoryController extends Controller
             $memberData['id'] = $category->id;
             $memberData['name'] = $category->name;
             $memberData['description'] = $category->description;
-            $memberData['image'] = AppConstant::$DOMAIN . '/api/categories/' . $category->image_id . '/images';
+            $memberData['image'] = AppConstant::$DOMAIN . 'api/categories/' . $category->id . '/images';
             array_push($data, $memberData);
         }
         return response()->json([

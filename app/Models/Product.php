@@ -49,7 +49,7 @@ class Product extends Model
         $price = $this->attributes['price'];
 
         // Format the price as desired (adding commas and appending 'VNĐ')
-        $formattedPrice = number_format($price) . 'VNĐ';
+        $formattedPrice = number_format($price) . ' VNĐ';
 
         return $formattedPrice;
     }

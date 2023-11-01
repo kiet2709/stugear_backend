@@ -388,6 +388,10 @@ class ProductSeeder extends Seeder
             DB::table('wishlist_products')->insert([
                 'product_id' => $wishlist_product[0],
                 'wishlist_id' => $wishlist_product[1],
+                'created_by' => $wishlist_product[1],
+                'updated_by' => $wishlist_product[1],
+                'created_at' => date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years')),
+                'updated_at'=> date('Y-m-d H:i:s', strtotime('-' . rand(1, 5) . ' years +1 day'))
             ]);
         }
     }

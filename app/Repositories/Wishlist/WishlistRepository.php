@@ -22,4 +22,27 @@ class WishlistRepository extends BaseRepository implements WishlistRepositoryInt
             ->paginate($limit);
         return $results;
     }
+
+    public function getWishlistByIdAndProductId($wishlistId, $productId)
+    {
+        $result = DB::table("wishlist_products")->where("product_id", $productId)
+                            ->where("wishlist_id", $wishlistId)->first();
+        return $result;
+    }
+
+    public function addToWishlist($data)
+    {
+        $results = DB::table("wishlist_products")
+            ->insert($data);
+        return $results;
+    }
+
+    public function updateWishlist($data, $productId, $wishlistId)
+    {
+        $results = DB::table("wishlist_products")
+            ->where('product_id', $productId)
+            ->where('wishlist_id', $wishlistId)
+            ->update($data);
+        return $results;
+    }
 }

@@ -54,10 +54,11 @@ class CommentSeeder extends Seeder
             $content = $contents[$faker->numberBetween(0, count($contents) -1)];
             $vote = $faker->numberBetween(1, 5);
             $product_id = $faker->numberBetween(1, 20);
-            $parent_id = $faker->numberBetween(10, 90);
+            $parent_id = $faker->numberBetween(0, 90);
 
             $owner_id = $faker->numberBetween(2, 10);
             $reply_on = $faker->numberBetween(2, 10);
+            $rating_id = $faker->numberBetween(0,5);
 
             $created_at = $faker->dateTimeThisDecade;
             $updated_at = $faker->dateTimeThisDecade;
@@ -71,6 +72,7 @@ class CommentSeeder extends Seeder
                 'product_id' => $product_id,
                 'owner_id' => $owner_id,
                 'reply_on' => $reply_on,
+                'rating_id' => $rating_id,
                 'created_by' => $created_by,
                 'created_at' => $created_at,
                 'updated_by' => $updated_by,

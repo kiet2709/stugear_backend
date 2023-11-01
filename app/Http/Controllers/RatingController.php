@@ -39,6 +39,10 @@ class RatingController extends Controller
         $data['rate'] = $memberRate;
         $data['total'] = $sumQuantity;
         $data['average'] = round($sumStar/$sumQuantity, 1);
-        return response()->json($data);
+        return response()->json([
+            'status' => 'Thành công',
+            'message' => 'Lấy comment thành công',
+            'data' => $data
+        ]);
     }
 }
