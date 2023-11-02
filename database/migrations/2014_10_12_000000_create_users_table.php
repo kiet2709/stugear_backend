@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('is_verify_email')->nullable();
             $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
-            $table->string('reputation')->nullable();
+            $table->integer('reputation')->default(0);
             $table->integer('is_enable')->nullable();
             $table->unsignedBigInteger('image_id')->nullable();
             $table->foreign('image_id')->references('id')->on('images');

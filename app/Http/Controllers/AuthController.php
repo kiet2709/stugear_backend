@@ -104,6 +104,14 @@ class AuthController extends Controller
             'role_id' => 2
         ]);
 
+        DB::table('contact_details')->insert([
+            'user_id' => $user->id,
+            'created_by' => $user->id,
+            'updated_by' => $user->id,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+        ]);
+
         DB::table('users')->where('id', $user->id)
             ->update([
                 'is_enable' => 1,

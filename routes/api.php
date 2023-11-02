@@ -57,8 +57,9 @@ Route::controller(VerifyController::class)->prefix('products')->group(function (
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function (){
-    Route::get('/users', 'index');
-    Route::get('/users/{id}', 'view');
+    Route::get('/', 'index');
+    Route::get('/info', 'getCurrentUserInfo')->middleware('auth_jwt');
+    Route::get('/{id}', 'view');
     Route::post('/{id}/upload-image', 'uploadImage')->middleware('auth_jwt');
     Route::get('/{id}/images', 'getImage');
     Route::patch('/status/{id}','updateStatus')->middleware('auth_jwt');
@@ -80,7 +81,7 @@ Route::controller(CommentController::class)->group(function (){
 
 Route::controller(WishlistController::class)->group(function (){
     Route::get('/users/wishlists', 'getWishlistByUserId')->middleware('auth_jwt');
-    Route::post('/wishlists', 'addProductToWishlist')->middleware('auth_jwt');
+    Route::post('/users/wishlists', 'addProductToWishlist')->middleware('auth_jwt');
     Route::delete('/wishlists/remove', 'remove')->middleware('auth_jwt');
 });
 

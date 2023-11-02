@@ -30,8 +30,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         $usersWithContactDetails = DB::table('users')
         ->join('contact_details', 'users.id', '=', 'contact_details.user_id')
-        ->select('users.id', 
-        'users.name', 
+        ->select('users.id',
+        'users.name',
         'users.email',
         'users.first_name',
         'last_name',
@@ -53,10 +53,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         $usersWithContactDetails = DB::table('users')
         ->join('contact_details', 'users.id', '=', 'contact_details.user_id')->where('users.id','=',$id)
-        ->select('users.id', 
-        'users.name', 
+        ->select('users.id',
+        'users.name',
         'users.email',
         'users.first_name',
+        'users.reputation',
         'last_name',
         'is_enable',
         'contact_details.phone_number',
@@ -70,6 +71,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         'contact_details.social_link',)
         ->get();
         return $usersWithContactDetails;
+    }
+
+    public function getContactDetail($userId)
+    {
+        $result = DB::table('contact_details')->where('user_id', $userId)->first();
+        return $result;
     }
 
 }

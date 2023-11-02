@@ -78,13 +78,13 @@ class WishlistController extends Controller
                     'fail'=> 'Thất bại',
                     'message'=> 'Không thể thêm sản phẩm vào nữa vì đã thêm rồi!'
                 ], 500);
-            } else {
+            } else if ($wishlist_product->product_id == $request->product_id && ($product->deleted_at == null && $product->deleted_by == null)){
                 $result = $this->wishlistRepository->updateWishlist([
                     'updated_by' => $userId,
                     'updated_at'=> Carbon::now(),
                     'deleted_by' => null,
                     'deleted_at' => null
-                ], $product->id, $wishlistId);
+                ], $request->product_id, $wishlistId);
                 if ($result) {
                     return response()->json([
                         'success'=> 'Thành công',
@@ -98,10 +98,9 @@ class WishlistController extends Controller
                 }
             }
         }
-
         $result = $this->wishlistRepository->addToWishlist([
             'wishlist_id'=> $wishlistId,
-            'product_id'=> $product->id,
+            'product_id'=> $request->product_id,
             'created_by' => $userId,
             'updated_by' => $userId,
             'created_at' => Carbon::now(),
