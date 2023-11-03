@@ -244,7 +244,9 @@ class AuthController extends Controller
                         ->where('user_id', $request->user_id)
                         ->join('roles', 'user_roles.role_id', '=', 'roles.id')
                         ->pluck('roles.role_name')
-                        ->toArray()
+                        ->toArray(),
+                    'user_id' => $user->id,
+                    'username' => $user->name
                 ]
             ]);
         } else {
@@ -253,25 +255,6 @@ class AuthController extends Controller
                 'message' => 'lỗi không đúng refresh token',
             ],498);
         }
-        // $token = $request->header();
-        // $bareToken = substr($token['authorization'][0], 7);
-        // $parts = explode('.', $bareToken);
-        // $payload = json_decode(base64_decode($parts[1]));
-        // $user = $this->userRepository->getById($payload->id);
-
-        // return response()->json([
-        //         'status' => 'success',
-        //         'message' => 'refresh token sucessfully',
-        //         'data' => [
-        //             'access_token' => $token,
-        //             'refresh_token' => $user->refresh_token,
-        //             'role' => DB::table('user_roles')
-        //                 ->where('user_id', $user->id)
-        //                 ->join('roles', 'user_roles.role_id', '=', 'roles.id')
-        //                 ->pluck('roles.role_name')
-        //                 ->toArray()
-        //         ]
-        //     ]);
     }
 
 }

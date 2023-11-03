@@ -59,7 +59,7 @@ Route::controller(VerifyController::class)->prefix('products')->group(function (
 Route::controller(WishlistController::class)->group(function (){
     Route::get('/users/wishlists', 'getWishlistByUserId')->middleware('auth_jwt');
     Route::post('/users/wishlists', 'addProductToWishlist')->middleware('auth_jwt');
-    Route::delete('/wishlists/remove', 'remove')->middleware('auth_jwt');
+    Route::post('/wishlists/remove', 'remove')->middleware('auth_jwt');
 });
 
 Route::controller(UserController::class)->prefix('users')->group(function (){
