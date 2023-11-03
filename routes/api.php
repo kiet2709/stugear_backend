@@ -56,6 +56,12 @@ Route::controller(VerifyController::class)->prefix('products')->group(function (
     Route::post('/verify-email','verifyEmail');
 });
 
+Route::controller(WishlistController::class)->group(function (){
+    Route::get('/users/wishlists', 'getWishlistByUserId')->middleware('auth_jwt');
+    Route::post('/users/wishlists', 'addProductToWishlist')->middleware('auth_jwt');
+    Route::delete('/wishlists/remove', 'remove')->middleware('auth_jwt');
+});
+
 Route::controller(UserController::class)->prefix('users')->group(function (){
     Route::get('/', 'index');
     Route::get('/info', 'getCurrentUserInfo')->middleware('auth_jwt');
@@ -79,11 +85,7 @@ Route::controller(CommentController::class)->group(function (){
     Route::post('/products/{id}/comments', 'create')->middleware('auth_jwt');
 });
 
-Route::controller(WishlistController::class)->group(function (){
-    Route::get('/users/wishlists', 'getWishlistByUserId')->middleware('auth_jwt');
-    Route::post('/users/wishlists', 'addProductToWishlist')->middleware('auth_jwt');
-    Route::delete('/wishlists/remove', 'remove')->middleware('auth_jwt');
-});
+
 
 
 

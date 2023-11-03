@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Jung-kook',
                 'email' => 'jungkook_jeon@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Jung-kook',
                 'last_name' => 'Jeon',
                 'reputation' => rand(10, 100),
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Thanh Tùng',
                 'email' => 'thanhtung_nguyen@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Thanh Tùng',
                 'last_name' => 'Nguyễn',
                 'reputation' => rand(10, 100),
@@ -46,7 +46,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Vĩ Văn',
                 'email' => 'vivan_hua@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Vĩ Văn',
                 'last_name' => 'Hứa',
                 'reputation' => rand(10, 100),
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Lệ Dĩnh',
                 'email' => 'ledinh_trieu@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Lệ Dĩnh',
                 'last_name' => 'Triệu',
                 'reputation' => rand(10, 100),
@@ -74,7 +74,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Mặc Sênh',
                 'email' => 'macsenh_trieu@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Mặc Sênh',
                 'last_name' => 'Triệu',
                 'reputation' => rand(10, 100),
@@ -88,7 +88,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Hạc Đệ',
                 'email' => 'hacde_vuong@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Hạc Đệ',
                 'last_name' => 'Vương',
                 'reputation' => rand(10, 100),
@@ -102,7 +102,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Ga-young',
                 'email' => 'gayoung_moon@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Ga-young',
                 'last_name' => 'Moon',
                 'reputation' => rand(10, 100),
@@ -116,7 +116,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Eun-woo',
                 'email' => 'eunwoo_cha@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Eun-woo',
                 'last_name' => 'Cha',
                 'reputation' => rand(10, 100),
@@ -130,7 +130,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Dĩ Thâm',
                 'email' => 'ditham_ha@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Dĩ Thâm',
                 'last_name' => 'Hà',
                 'reputation' => rand(10, 100),
@@ -144,7 +144,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Diệc Phi',
                 'email' => 'diecphi_luu@gmail.com',
-                'password' => '$2y$10$89ZIwD/rZuyybbAm1tSXTeshyHGD1WzHhztAXLOGcu8mWFYQKzV16',
+                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
                 'first_name' => 'Diệc Phi',
                 'last_name' => 'Lưu',
                 'reputation' => rand(10, 100),

@@ -30,7 +30,6 @@ class WishlistController extends Controller
         $token = $request->header();
         $bareToken = substr($token['authorization'][0], 7);
         $userId = AuthService::getUserId($bareToken);
-
         $limit = 10;
         $wishlist_products = $this->wishlistRepository->getWishlistByUserId($userId, $limit);
         $data = [];
@@ -73,12 +72,12 @@ class WishlistController extends Controller
 
         foreach ($wishlist_products as $wishlist_product) {
             $product = $this->productRepository->getById($wishlist_product->product_id);
-            if ($wishlist_product->product_id == $request->product_id && ($product->deleted_at != null || $product->deleted_by != null)) {
+            if ($wishlist_product->product_id == $request->product_id && ($wishlist_product->deleted_at == null || $wishlist_product->deleted_by == null)) {
                 return response()->json([
                     'fail'=> 'Thất bại',
                     'message'=> 'Không thể thêm sản phẩm vào nữa vì đã thêm rồi!'
                 ], 500);
-            } else if ($wishlist_product->product_id == $request->product_id && ($product->deleted_at == null && $product->deleted_by == null)){
+            } else if ($wishlist_product->product_id == $request->product_id && ($wishlist_product->deleted_at != null || $wishlist_product->deleted_by != null)){
                 $result = $this->wishlistRepository->updateWishlist([
                     'updated_by' => $userId,
                     'updated_at'=> Carbon::now(),
