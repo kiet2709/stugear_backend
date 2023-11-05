@@ -92,4 +92,25 @@ class TagController extends Controller
             ]);
         }
     }
+
+    public function index(Request $request)
+    {
+        $tags = $this->tagRepository->getAll($request->limit ?? 100);
+        $data = [];
+        $memberData = [];
+        foreach ($tags as $tag) {
+            $memberData['id'] = $tag->id;
+            $memberData['name'] = $tag->name;
+            $memberData['color'] = $tag->color;
+            array_push($data, $memberData);
+        }
+        return response()->json([
+            'status'=> 'Thành công',
+            'message'=> 'Lấy dữ liệu thành công',
+            'data'=> $data,
+            'page' => $request->page ?? 1,
+            'total_page' => $tags->lastPage(),
+            'total_items' => count($tags)
+        ]);
+    }
 }

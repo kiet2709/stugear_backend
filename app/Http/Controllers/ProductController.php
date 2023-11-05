@@ -8,12 +8,14 @@ use App\Repositories\Comment\CommentRepositoryInterface;
 use App\Repositories\Product\ProductRepositoryInterface;
 use App\Repositories\Tag\TagRepositoryInterface;
 use App\Repositories\User\UserRepositoryInterface;
+use App\Util\AuthService;
 use App\Util\ImageService;
 use Illuminate\Http\Request;
 use App\Util\AppConstant;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class ProductController extends Controller
 {
@@ -56,8 +58,9 @@ class ProductController extends Controller
                 array_push($tags, $tagMember);
             }
             $memberData['tags'] = $tags;
-            $memberData['description'] = $product->description;
+            $memberData['description'] = $product->description ?? '';
             $memberData['status'] = $product->status;
+            $memberData['brand'] = $product->brand ?? '';
             $memberData['last_updated'] = $product->updated_at ?? '';
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
             array_push($data, $memberData);
@@ -99,8 +102,9 @@ class ProductController extends Controller
                 $count++;
             }
             $data['tags'] = $tags;
-            $data['description'] = $product->description;
+            $data['description'] = $product->description ?? '';
             $data['status'] = $product->status;
+            $data['brand'] = $product->brand ?? '';
             $data['last_updated'] = $product->updated_at ?? '';
             $data['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
             $data['owner_name'] = $product->user->name;
@@ -168,8 +172,30 @@ class ProductController extends Controller
                 $count++;
             }
             $memberData['tags'] = $tags;
-            $memberData['description'] = $product->description;
-            $memberData['status'] = $product->status;
+            $memberData['description'] = $product->description ?? '';
+            $result = '';
+            switch ($product->status) {
+                case 0:
+                    $result = 'Chặn';
+                    break;
+                case 1:
+                    $result = 'Nháp';
+                    break;
+                case 2:
+                    $result = 'Chờ duyệt';
+                    break;
+                case 3:
+                    $result = 'Đã duyệt';
+                    break;
+                case 4:
+                    $result = 'Đã bán';
+                    break;
+                case 5:
+                    $result = 'Đã thanh toán';
+                    break;
+            }
+            $memberData['status'] = $result;
+            $memberData['brand'] = $product->brand ?? '';
             $memberData['last_updated'] = Carbon::parse($product->updated_at)->format('d/m/Y');
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
             array_push($data, $memberData);
@@ -211,8 +237,30 @@ class ProductController extends Controller
                 array_push($tags, $tagMember);
             }
             $memberData['tags'] = $tags;
-            $memberData['description'] = $product->description;
-            $memberData['status'] = $product->status;
+            $memberData['description'] = $product->description ?? '';
+            $result = '';
+            switch ($product->status) {
+                case 0:
+                    $result = 'Chặn';
+                    break;
+                case 1:
+                    $result = 'Nháp';
+                    break;
+                case 2:
+                    $result = 'Chờ duyệt';
+                    break;
+                case 3:
+                    $result = 'Đã duyệt';
+                    break;
+                case 4:
+                    $result = 'Đã bán';
+                    break;
+                case 5:
+                    $result = 'Đã thanh toán';
+                    break;
+            }
+            $memberData['status'] = $result;
+            $memberData['brand'] = $product->brand ?? '';
             $memberData['last_updated'] = $product->updated_at ?? '';
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user->id . '/images';;
             $memberData['owner_name'] = $product->user->name;
@@ -274,9 +322,9 @@ class ProductController extends Controller
             'price' => 'required|integer|min:1',
             'condition' => 'required|in:0,1',
             'edition' => 'required',
+            'status' => 'required|integer',
             'origin_price' => 'required|integer|min:1',
             'quantity' => 'required|integer|min:1',
-            'user_id' => 'required|integer|min:1',
             'category_id' => 'required|integer|min:1',
             'transaction_id' => 'required|integer|min:1',
         ]);
@@ -285,21 +333,40 @@ class ProductController extends Controller
              return response()->json(['error' => $validator->errors()], 400);
         }
 
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
+        $role = DB::table('user_roles')
+        ->where('user_id', $userId)
+        ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+        ->pluck('roles.role_name')
+        ->toArray();
+
+        if (in_array('USER', $role) && ($request->status == 0 || $request->status == 3 || $request->status == 5)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Không cho phép người dùng tạo sản phẩm trong các trạng thái này'
+            ],403);
+        }
+
         $data = [
             'name' => $request->name,
             'price' => $request->price,
             'condition' => strval($request->condition),
             'edition' => $request->edition,
+            'status' => $request->status,
+            'brand' => $request->brand ?? '',
             'origin_price' => $request->origin_price,
             'quantity' => $request->quantity,
-            'user_id' => $request->user_id,
+            'user_id' => $userId,
             'category_id' => $request->category_id,
             'transaction_id' => $request->transaction_id,
             'description' => $request->description ?? '',
             'created_at' => Carbon::now(),
-            'created_by' => $request->user_id,
+            'created_by' => $userId,
             'updated_at' => Carbon::now(),
-            'updated_by' => $request->user_id,
+            'updated_by' => $userId,
         ];
         $product = $this->productRepository->save($data);
         if (!$product) {
@@ -319,23 +386,26 @@ class ProductController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required',
-            'status' => 'required|in:0,1',
+            'status' => 'required',
         ]);
+
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
 
         if ($validator->fails()) {
              return response()->json(['error' => $validator->errors()], 400);
         }
         $role = DB::table('user_roles')
-        ->where('user_id', $request->user_id)
+        ->where('user_id', $userId)
         ->join('roles', 'user_roles.role_id', '=', 'roles.id')
         ->pluck('roles.role_name')
         ->toArray();
 
-        if (in_array('USER', $role) && $request->status == 1) {
+        if (in_array('USER', $role) && ($request->status == 0 || $request->status == 3 || $request->status == 5)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Không cho phép người dùng tự duyệt sản phẩm'
+                'message' => 'Không cho phép người dùng tự duyệt sản phẩm trong các trạng thái này'
             ]);
         }
         $this->productRepository->save(['status' => strval($request->status)], $id);
@@ -344,6 +414,74 @@ class ProductController extends Controller
             'status' => 'success',
             'message' => 'Cập nhật trạng thái sản phẩm thành công',
             'data' => $this->productRepository->getById($id)
+        ]);
+    }
+
+    public function getProductByCurrentUser(Request $request)
+    {
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
+        $limit = $request->limit ?? 10;
+
+        $products = $this->productRepository->getProductByCurrentUser($userId, $limit);
+        $data = [];
+        $memberData = [];
+        foreach ($products as $product) {
+            $memberData['id'] = $product->id;
+            $memberData['title'] = $product->name;
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
+            $memberData['price'] = number_format($product->price) . ' VNĐ';
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
+            $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
+            $tags = [];
+            $count = 0;
+            foreach ($productTags as $productTag) {
+                if ($count == 3) break;
+                $tag = $this->tagRepository->getById($productTag->tag_id);
+                $tagMember['name'] = $tag->name;
+                $tagMember['color'] = $tag->color;
+                array_push($tags, $tagMember);
+                $count++;
+            }
+            $memberData['tags'] = $tags;
+            $memberData['description'] = $product->description;
+            $result = '';
+            switch ($product->status) {
+                case 0:
+                    $result = 'Chặn';
+                    break;
+                case 1:
+                    $result = 'Nháp';
+                    break;
+                case 2:
+                    $result = 'Chờ duyệt';
+                    break;
+                case 3:
+                    $result = 'Đã duyệt';
+                    break;
+                case 4:
+                    $result = 'Đã bán';
+                    break;
+                case 5:
+                    $result = 'Đã thanh toán';
+                    break;
+            }
+            $memberData['status'] = $result;
+            $memberData['brand'] = $product->brand;
+            $memberData['last_updated'] = Carbon::parse($product->updated_at)->format('d/m/Y');
+            $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
+            array_push($data, $memberData);
+        }
+
+        return response()->json([
+            'status'=> 'success',
+            'message'=> 'Lấy dữ liệu thành công',
+            'data'=> $data,
+            'page' => $request->page ?? 1,
+            'total_page' => $products->lastPage(),
+            'total_items' => count($products)
         ]);
     }
 
@@ -358,6 +496,25 @@ class ProductController extends Controller
                 'tags' => $result
             ]
         ]);
+    }
+
+    public function getAllStatusProduct()
+    {
+        return response()->json([
+            'status' => 'Thành công',
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => AppConstant::$STATUS_PRODUCT
+        ]);
+    }
+
+    public function getAllTransactionMethod()
+    {
+        return response()->json([
+            'status' => 'Thành công',
+            'message' => 'Lấy dữ liệu thành công',
+            'data'=> AppConstant::$TRANSACTION_METHOD
+        ]);
+
     }
 
 }

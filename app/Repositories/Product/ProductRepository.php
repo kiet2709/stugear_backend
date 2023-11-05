@@ -79,4 +79,12 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         return $result;
     }
 
+    public function getProductByCurrentUser($userId, $limit)
+    {
+        $result = DB::table('products')
+        ->where('user_id', $userId)
+        ->paginate($limit);
+        return $result;
+    }
+
 }

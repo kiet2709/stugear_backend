@@ -16,11 +16,12 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->integer('price')->nullable();
             $table->text('description')->nullable();
-            $table->enum('condition', [0, 1])->nullable();
+            $table->integer('condition')->nullable();
             $table->string('edition')->nullable();
+            $table->string('brand')->nullable();
             $table->integer('origin_price')->nullable();
             $table->integer('quantity')->nullable();
-            $table->enum('status', [0, 1])->default(0);
+            $table->integer('status')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('category_id')->nullable();

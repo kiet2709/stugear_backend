@@ -24,6 +24,7 @@ class Product extends Model
         'origin_price',
         'quantity',
         'status',
+        'brand',
         'user_id',
         'category_id',
         'transaction_id',
@@ -61,7 +62,28 @@ class Product extends Model
 
     public function getStatusAttribute($value)
     {
-        return $value == 1 ? 'Còn hàng' : 'Hết hàng';
+        $result = '';
+        switch ($value) {
+            case 0:
+                $result = 'Chặn';
+                break;
+            case 1:
+                $result = 'Nháp';
+                break;
+            case 2:
+                $result = 'Chờ duyệt';
+                break;
+            case 3:
+                $result = 'Đã duyệt';
+                break;
+            case 4:
+                $result = 'Đã bán';
+                break;
+            case 5:
+                $result = 'Đã thanh toán';
+                break;
+        }
+        return $result;
     }
 
     public function category() {

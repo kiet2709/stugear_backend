@@ -39,6 +39,9 @@ Route::controller(CategoryController::class)->prefix('categories')->group(functi
 
 Route::controller(ProductController::class)->prefix('products')->group(function (){
     Route::get('/', 'index');
+    Route::get('/all-status', 'getAllStatusProduct');
+    Route::get('/all-transaction', 'getAllTransactionMethod');
+    Route::get('/current', 'getProductByCurrentUser');
     Route::get('/search','searchByName');
     Route::get('/criteria','getByCriteria');
     Route::get('/category/{id}', 'getProductByCategoryId');
@@ -73,6 +76,7 @@ Route::controller(UserController::class)->prefix('users')->group(function (){
 
 Route::controller(TagController::class)->prefix('tags')->group(function (){
     Route::post('/', 'create')->middleware('auth_jwt');
+    Route::get('/','index');
     Route::get('/{id}', 'view');
 });
 

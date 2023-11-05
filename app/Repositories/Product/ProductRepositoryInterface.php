@@ -16,4 +16,6 @@ interface ProductRepositoryInterface extends RepositoryInterface
     // public function getProductByTagId($id, $limit);
 
     public function getProductTagsByProductId($id);
+
+    public function getProductByCurrentUser($userId, $limit);
 }
