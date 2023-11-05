@@ -41,6 +41,7 @@ class CommentController extends Controller
             $ownerComment = $this->userRepository->getById($comment->owner_id);
             $memberData['id'] = $comment->id;
             $memberData['owner_name'] = $ownerComment->name;
+            $memberData['owner_id'] = $comment->owner_id;
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $comment->owner_id . '/images';
             $memberData['content'] = $comment->content;
             $memberData['vote'] = $comment->vote;
@@ -51,6 +52,7 @@ class CommentController extends Controller
             } else {
                 $memberData['reply_on'] = '';
             }
+            $memberData['reply_on_id'] = $comment->reply_on;
             $memberData['last_updated'] = Carbon::parse($comment->updated_at)->diffForHumans(Carbon::now());
             $subCommentData = [];
             $subCommentMember = [];
@@ -59,6 +61,7 @@ class CommentController extends Controller
                 $ownerSubComment = $this->userRepository->getById($subComment->owner_id);
                 $subCommentMember['id'] = $subComment->id;
                 $subCommentMember['owner_name'] = $ownerSubComment->name;
+                $subCommentMember['owner_id'] = $subComment->owner_id;
                 $subCommentMember['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $subComment->owner_id . '/images';
                 $subCommentMember['content'] = $subComment->content;
                 $subCommentMember['vote'] = $subComment->vote;
@@ -68,6 +71,7 @@ class CommentController extends Controller
                 } else {
                     $subCommentMember['reply_on'] = '';
                 }
+                $subCommentMember['reply_on_id'] = $subComment->reply_on;
                 $subCommentMember['last_updated'] = Carbon::parse($subComment->updated_at)->diffForHumans(Carbon::now());
                 array_push($subCommentData, $subCommentMember);
             }
@@ -102,6 +106,13 @@ class CommentController extends Controller
              return response()->json(['error' => $validator->errors()], 400);
         }
 
+        if ($request->content == '') {
+            return response()->json([
+                'status' => 'Lỗi',
+                'message' => 'Nội dung comment không thể rỗng'
+            ], 400);
+        }
+
         if ($request->parent_id != 0 && $request->rating != 0) {
             return response()->json([
                 'status'=> 'Lỗi',
@@ -126,8 +137,8 @@ class CommentController extends Controller
             'reply_on' => $request->input('reply_on'),
             'vote' => 0,
             'rating_id' => $request->input('rating'),
-            'created_by' => $request->input('user_id'),
-            'updated_by' => $request->input('user_id'),
+            'created_by' => $userId,
+            'updated_by' => $userId,
             'created_at' => Carbon::now(),
             'updated_at'=> Carbon::now()
         ]);
@@ -144,5 +155,55 @@ class CommentController extends Controller
             ],400);
         }
 
+    }
+
+    public function update(Request $request, $id)
+    {
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
+        $validator = Validator::make($request->all(), [
+            'content' => 'required',
+            'reply_on' => 'integer|min:0'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        if ($request->content == '') {
+            return response()->json([
+                'status' => 'Lỗi',
+                'message' => 'Nội dung comment không thể rỗng'
+            ], 400);
+        }
+
+        $comment = $this->commentRepository->getById($id);
+        if ($comment->owner_id != $userId) {
+            return response()->json([
+                'status' => 'Lỗi',
+                'message' => 'Không thể chỉnh sửa comment của người dùng khác'
+            ], 400);
+        }
+
+        $result = $this->commentRepository->save([
+            'reply_on' => $request->reply_on ?? $comment->reply_on,
+            'content'=> $request->content,
+            'updated_by' => $userId,
+            'updated_at' => Carbon::now()
+        ], $comment->id);
+
+        if ($result) {
+            return response()->json([
+                'status'=> 'Thành công',
+                'message' => 'Comment thành công',
+            ]);
+        } else {
+            return response()->json([
+                'status'=> 'Thất bại',
+                'message' => 'Comment thất bại',
+            ],400);
+        }
     }
 }

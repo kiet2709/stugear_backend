@@ -87,6 +87,7 @@ Route::controller(RatingController::class)->group(function (){
 Route::controller(CommentController::class)->group(function (){
     Route::get('/products/{id}/comments', 'getCommentByProductId');
     Route::post('/products/{id}/comments', 'create')->middleware('auth_jwt');
+    Route::patch('/products/{id}/comments', 'update')->middleware('auth_jwt');
 });
 
 
