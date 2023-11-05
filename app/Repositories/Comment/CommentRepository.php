@@ -33,6 +33,7 @@ class CommentRepository extends BaseRepository implements CommentRepositoryInter
         $result = DB::table('comments')
             ->where('product_id', $id )
             ->where('parent_id', 0 )
+            ->orderBy('updated_at','desc')
             ->paginate( $limit );
         return $result;
     }

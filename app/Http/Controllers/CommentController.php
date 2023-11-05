@@ -106,14 +106,14 @@ class CommentController extends Controller
             return response()->json([
                 'status'=> 'Lỗi',
                 'message' => 'Khi reply không được rating'
-            ], 500);
+            ], 400);
         }
 
         if ($request->parent_id == 0 && $request->rating == 0) {
             return response()->json([
                 'status'=> 'Lỗi',
                 'message' => 'Khi comment phải rating, chỉ reply comment là không rating!'
-            ], 500);
+            ], 400);
         }
 
         $this->ratingRepository->rating($request->product_id, $request->rating, $userId);
@@ -141,7 +141,7 @@ class CommentController extends Controller
             return response()->json([
                 'status'=> 'Thất bại',
                 'message' => 'Comment thất bại',
-            ],500);
+            ],400);
         }
 
     }
