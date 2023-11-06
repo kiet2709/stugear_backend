@@ -115,6 +115,7 @@ class AuthController extends Controller
         DB::table('users')->where('id', $user->id)
             ->update([
                 'is_enable' => 1,
+                'is_verify_email' => 0,
                 'created_by' => $user->id,
                 'updated_by' => $user->id
             ]);

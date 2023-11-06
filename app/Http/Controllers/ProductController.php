@@ -373,7 +373,7 @@ class ProductController extends Controller
             return response()->json([
                 'status' => 'fail',
                 'message' => 'Tạo sản phẩm thất bại',
-            ]);
+            ], 400);
         } else {
             return response()->json([
                 'status' => 'success',
@@ -406,7 +406,7 @@ class ProductController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Không cho phép người dùng tự duyệt sản phẩm trong các trạng thái này'
-            ]);
+            ], 403);
         }
         $this->productRepository->save(['status' => strval($request->status)], $id);
 
@@ -514,6 +514,75 @@ class ProductController extends Controller
             'message' => 'Lấy dữ liệu thành công',
             'data'=> AppConstant::$TRANSACTION_METHOD
         ]);
+
+    }
+
+    public function updateProduct(Request $request, $id)
+    {
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
+        $product = $this->productRepository->getById($id);
+        if ($product->user_id != $userId) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message'=> 'Không thể chỉnh sửa sản phẩm của người dùng khác',
+            ]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'string',
+            'price' => 'integer|min:1',
+            'condition' => 'in:0,1',
+            'origin_price' => 'integer|min:1',
+            'quantity' => 'integer|min:1',
+            'category_id' => 'integer|min:1',
+            'transaction_id' => 'integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+             return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
+        $role = DB::table('user_roles')
+        ->where('user_id', $userId)
+        ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+        ->pluck('roles.role_name')
+        ->toArray();
+
+        $data = [
+            'name' => $request->name ?? $product->name,
+            'price' => $request->price ?? $product->getRawOriginal('price'),
+            'condition' => $request->condition ? strval($request->condition) : $product->condition,
+            'edition' => $request->edition ?? $product->edition,
+            'brand' => $request->brand ?? $product->brand,
+            'origin_price' => $request->origin_price ?? $product->origin_price,
+            'quantity' => $request->quantity ?? $product->quantity,
+            'category_id' => $request->category_id ?? $product->category_id,
+            'transaction_id' => $request->transaction_id ?? $product->transaction_id,
+            'description' => $request->description ?? $product->description,
+            'updated_at' => Carbon::now(),
+            'updated_by' => $userId,
+        ];
+
+        $product = $this->productRepository->save($data, $id);
+
+        if (!$product) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Cập nhật sản phẩm thất bại',
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Cập nhật sản phẩm thành công',
+            ]);
+        }
 
     }
 

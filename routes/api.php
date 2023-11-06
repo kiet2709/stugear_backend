@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
@@ -48,6 +49,7 @@ Route::controller(ProductController::class)->prefix('products')->group(function 
     Route::get('/tag/{id}','getProductByTagId');
     Route::get('/{id}', 'view');
     Route::post('/', 'create')->middleware('auth_jwt');
+    Route::patch('/{id}/update','updateProduct')->middleware('auth_jwt');
     Route::patch('/status/{id}','updateStatus')->middleware('auth_jwt');
     Route::patch('/{id}/attach-tag','attachTag')->middleware('auth_jwt');
     Route::post('/{id}/upload-image', 'uploadImage')->middleware('auth_jwt');
@@ -88,6 +90,12 @@ Route::controller(CommentController::class)->group(function (){
     Route::get('/products/{id}/comments', 'getCommentByProductId');
     Route::post('/products/{id}/comments', 'create')->middleware('auth_jwt');
     Route::patch('/products/{id}/comments', 'update')->middleware('auth_jwt');
+});
+
+Route::controller(PaymentController::class)->prefix('payments')->group(function (){
+    Route::get('/test-api-payment','testApiPayment');
+    Route::post('/momo-payment','momoPayment');
+    Route::post('/vnpay-payment','vnpayPayment');
 });
 
 

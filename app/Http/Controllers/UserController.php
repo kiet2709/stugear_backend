@@ -50,6 +50,7 @@ class UserController extends Controller
         $data['id'] = $user->id;
         $data['email'] = $user->email;
         $data['name'] = $user->name;
+        $data['is_verify'] = $user->is_verify_email == 0 ? 'false' : 'true';
         $data['reputation'] = $user->reputation;
         if ($user->image_id == null) {
             if (!isset($userInfo->gender) || $userInfo->gender == 0 || $userInfo->gender == null) {
