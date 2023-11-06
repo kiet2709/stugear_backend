@@ -240,7 +240,7 @@ class AuthController extends Controller
                 'data' => [
                     'access_token' => JWTAuth::parseToken()->refresh(),
                     'refresh_token' => $user->refresh_token,
-                    'role' => DB::table('user_roles')
+                    'roles' => DB::table('user_roles')
                         ->where('user_id', $request->user_id)
                         ->join('roles', 'user_roles.role_id', '=', 'roles.id')
                         ->pluck('roles.role_name')
