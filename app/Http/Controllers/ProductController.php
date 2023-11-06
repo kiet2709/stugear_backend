@@ -369,6 +369,19 @@ class ProductController extends Controller
             'updated_by' => $userId,
         ];
         $product = $this->productRepository->save($data);
+
+        for ($i = 1; $i<=5; $i++) {
+            DB::table('rating_products')->insert([
+                'product_id'=> $product->id,
+                'rating_id' => $i,
+                'quantity' => 0,
+                'created_at' => Carbon::now(),
+                'created_by' => $userId,
+                'updated_at' => Carbon::now(),
+                'updated_by' => $userId
+            ]);
+        }
+
         if (!$product) {
             return response()->json([
                 'status' => 'fail',
