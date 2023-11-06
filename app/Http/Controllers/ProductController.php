@@ -487,6 +487,25 @@ class ProductController extends Controller
 
     public function attachTag(Request $request, $id)
     {
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
+        $product = $this->productRepository->getById($id);
+
+        $role = DB::table('user_roles')
+        ->where('user_id', $userId)
+        ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+        ->pluck('roles.role_name')
+        ->toArray();
+
+        if (in_array('USER', $role) && $userId != $product->user_id) {
+            return response()->json([
+                'status'=> 'error',
+                'message'=> 'Không được phép đính tag cho sản phẩm của user khác, hãy là chủ sở hữu hoặc admin!',
+            ], 400);
+        }
+
         $result = $this->productRepository->attachTag($id, $request->tags);
         return response()->json([
             'status'=> 'success',

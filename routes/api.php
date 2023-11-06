@@ -90,6 +90,7 @@ Route::controller(CommentController::class)->group(function (){
     Route::get('/products/{id}/comments', 'getCommentByProductId');
     Route::post('/products/{id}/comments', 'create')->middleware('auth_jwt');
     Route::patch('/products/{id}/comments', 'update')->middleware('auth_jwt');
+    Route::patch('/products/comments/{id}/vote', 'vote');
 });
 
 Route::controller(PaymentController::class)->prefix('payments')->group(function (){

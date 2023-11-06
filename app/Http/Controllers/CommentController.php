@@ -206,4 +206,53 @@ class CommentController extends Controller
             ],400);
         }
     }
+
+    public function vote(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'vote' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $voteSymbol = ['+', '-'];
+
+
+        if (!in_array($request->vote, $voteSymbol))
+        {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message' => 'Vote không được',
+            ], 400);
+        }
+
+        $comment = $this->commentRepository->getById($id);
+        $oldVote = $comment->vote;
+
+        if ($request->vote == '+') {
+            $comment->increment('vote');
+        }
+
+        if ($request->vote == '-') {
+            $comment->decrement('vote');
+        }
+
+        $comment = $this->commentRepository->getById($id);
+        $newVote = $comment->vote;
+
+        if ($oldVote != $newVote)
+        {
+            return response()->json([
+                'status'=> 'Thành công',
+                'message'=> 'Vote thành công',
+            ]);
+        } else {
+            return response()->json([
+                'status'=> 'Thất bại',
+                'message'=> 'Vote thất bại'
+            ]);
+        }
+    }
 }
