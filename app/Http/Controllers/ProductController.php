@@ -414,12 +414,41 @@ class ProductController extends Controller
         ->pluck('roles.role_name')
         ->toArray();
 
-        // if (in_array('USER', $role) && ($request->status == 0 || $request->status == 3 || $request->status == 5)) {
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => 'Không cho phép người dùng tạo sản phẩm trong các trạng thái này'
-        //     ],403);
-        // }
+        if ($request->price < 0 && $request->price!=null) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message'=> 'Lỗi price nhỏ hơn 0'
+            ], 400);
+        }
+
+        if (!in_array($request->condition, [0,1]) || $request->condition != null) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message'=> 'Condition không đúng định dạng'
+            ], 400);
+        }
+
+        if ($request->origin_price < 0 && $request->price!=null) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message'=> 'Lỗi origin_price nhỏ hơn 0'
+            ], 400);
+        }
+
+        if ($request->category_id < 0 && $request->category_id!=null) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message'=> 'Lỗi category_id nhỏ hơn 0'
+            ], 400);
+        }
+
+
+        if ($request->transaction_id < 0 && $request->transaction_id!=null) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message'=> 'Lỗi transaction_id nhỏ hơn 0'
+            ], 400);
+        }
 
         $data = [
             'name' => $request->name ?? '',
