@@ -45,6 +45,9 @@ class ProductController extends Controller
         $data = [];
         $memberData = [];
         foreach ($products as $product) {
+            // if ($product->status == 1 || $product->status == 0 || $product->status == 5) {
+            //     continue;
+            // }
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
@@ -219,6 +222,9 @@ class ProductController extends Controller
         $products = [];
         foreach ($productTags as $productTag) {
             $product = $this->productRepository->getById( $productTag->product_id );
+            if ($product->status == 1 || $product->status == 0 || $product->status == 5) {
+                continue;
+            }
             array_push($products, $product);
         }
         $data = [];
@@ -347,7 +353,7 @@ class ProductController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Không cho phép người dùng tạo sản phẩm trong các trạng thái này'
-            ],403);
+            ],400);
         }
 
         $data = [
@@ -398,20 +404,6 @@ class ProductController extends Controller
 
     public function createDraft(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'string',
-            'price' => 'integer|min:1',
-            'condition' => 'in:0,1',
-            'origin_price' => 'integer|min:1',
-            'quantity' => 'integer|min:1',
-            'category_id' => 'integer|min:1',
-            'transaction_id' => 'integer|min:1',
-        ]);
-
-        if ($validator->fails()) {
-             return response()->json(['error' => $validator->errors()], 400);
-        }
-
         $token = $request->header();
         $bareToken = substr($token['authorization'][0], 7);
         $userId = AuthService::getUserId($bareToken);
@@ -498,7 +490,7 @@ class ProductController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Không cho phép người dùng tự duyệt sản phẩm trong các trạng thái này'
-            ], 403);
+            ], 400);
         }
         $this->productRepository->save(['status' => strval($request->status)], $id);
 
@@ -591,6 +583,17 @@ class ProductController extends Controller
         ->pluck('roles.role_name')
         ->toArray();
 
+        $tags = $request->tags;
+
+        foreach ($tags as $tag) {
+            if (!is_int($tag) || $tag < 1) {
+                return response()->json([
+                    'status'=> 'Lỗi',
+                    'message'=> 'Mã tag không đúng'
+                ], 400);
+            }
+        }
+
         if (in_array('USER', $role) && $userId != $product->user_id) {
             return response()->json([
                 'status'=> 'error',
@@ -599,13 +602,10 @@ class ProductController extends Controller
         }
 
         $result = $this->productRepository->attachTag($id, $request->tags);
+
         return response()->json([
             'status'=> 'success',
             'message'=> 'Gắn tag thành công',
-            'data'=> [
-                'product_id' => $id,
-                'tags' => $result
-            ]
         ]);
     }
 
@@ -672,7 +672,7 @@ class ProductController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Không cho phép người dùng tự duyệt sản phẩm trong các trạng thái này'
-            ], 403);
+            ], 400);
         }
 
         $data = [

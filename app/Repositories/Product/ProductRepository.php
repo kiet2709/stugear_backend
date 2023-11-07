@@ -34,6 +34,9 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     public function attachTag($id, $tags)
     {
         $product = $this->model->find($id);
+        if (empty($tags)) {
+            return true;
+        }
         $tagIds = DB::table('product_tags')
         ->where('product_id', $id)
         ->pluck('tag_id')
@@ -68,6 +71,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     {
         $result = DB::table('products')
         ->where('category_id', $id)
+        ->whereNotIn('status', [0, 1, 5])
         ->paginate($limit);
         return $result;
     }
