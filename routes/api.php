@@ -49,6 +49,7 @@ Route::controller(ProductController::class)->prefix('products')->group(function 
     Route::get('/tag/{id}','getProductByTagId');
     Route::get('/{id}', 'view');
     Route::post('/', 'create')->middleware('auth_jwt');
+    Route::post('/draft', 'createDraft')->middleware('auth_jwt');
     Route::patch('/{id}/update','updateProduct')->middleware('auth_jwt');
     Route::patch('/status/{id}','updateStatus')->middleware('auth_jwt');
     Route::patch('/{id}/attach-tag','attachTag')->middleware('auth_jwt');

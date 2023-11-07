@@ -396,6 +396,85 @@ class ProductController extends Controller
         }
     }
 
+    public function createDraft(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string',
+            'price' => 'integer|min:1',
+            'condition' => 'in:0,1',
+            'origin_price' => 'integer|min:1',
+            'quantity' => 'integer|min:1',
+            'category_id' => 'integer|min:1',
+            'transaction_id' => 'integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+             return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
+        $role = DB::table('user_roles')
+        ->where('user_id', $userId)
+        ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+        ->pluck('roles.role_name')
+        ->toArray();
+
+        // if (in_array('USER', $role) && ($request->status == 0 || $request->status == 3 || $request->status == 5)) {
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => 'Không cho phép người dùng tạo sản phẩm trong các trạng thái này'
+        //     ],403);
+        // }
+
+        $data = [
+            'name' => $request->name ?? '',
+            'price' => $request->price ?? 0,
+            'condition' => $request->condition != null ? strval($request->condition) : "0",
+            'edition' => $request->edition ?? '',
+            'status' => 1,
+            'brand' => $request->brand ?? '',
+            'origin_price' => $request->origin_price ?? 0,
+            'quantity' => $request->quantity ?? 0,
+            'user_id' => $userId,
+            'category_id' => $request->category_id ?? 1,
+            'transaction_id' => $request->transaction_id ?? 1,
+            'description' => $request->description ?? '',
+            'created_at' => Carbon::now(),
+            'created_by' => $userId,
+            'updated_at' => Carbon::now(),
+            'updated_by' => $userId,
+        ];
+        $product = $this->productRepository->save($data);
+
+        for ($i = 1; $i<=5; $i++) {
+            DB::table('rating_products')->insert([
+                'product_id'=> $product->id,
+                'rating_id' => $i,
+                'quantity' => 0,
+                'created_at' => Carbon::now(),
+                'created_by' => $userId,
+                'updated_at' => Carbon::now(),
+                'updated_by' => $userId
+            ]);
+        }
+
+        if (!$product) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Tạo sản phẩm thất bại',
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tạo sản phẩm thành công',
+                'data' => $product
+            ]);
+        }
+    }
+
     public function updateStatus(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -568,6 +647,7 @@ class ProductController extends Controller
             'price' => 'integer|min:1',
             'condition' => 'in:0,1',
             'origin_price' => 'integer|min:1',
+            'status' => 'required|integer|min:0',
             'quantity' => 'integer|min:1',
             'category_id' => 'integer|min:1',
             'transaction_id' => 'integer|min:1',
@@ -576,6 +656,7 @@ class ProductController extends Controller
         if ($validator->fails()) {
              return response()->json(['error' => $validator->errors()], 400);
         }
+
 
         $token = $request->header();
         $bareToken = substr($token['authorization'][0], 7);
@@ -586,6 +667,13 @@ class ProductController extends Controller
         ->join('roles', 'user_roles.role_id', '=', 'roles.id')
         ->pluck('roles.role_name')
         ->toArray();
+
+        if (in_array('USER', $role) && ($request->status == 0 || $request->status == 3 || $request->status == 5)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Không cho phép người dùng tự duyệt sản phẩm trong các trạng thái này'
+            ], 403);
+        }
 
         $data = [
             'name' => $request->name ?? $product->name,
