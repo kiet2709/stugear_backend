@@ -33,7 +33,7 @@ Route::controller(AuthController::class)->prefix('auth')->group(function (){
 Route::controller(CategoryController::class)->prefix('categories')->group(function (){
     Route::get('/', 'index');
     Route::get('/{id}', 'view');
-    Route::post('/{id}/upload-image', 'uploadImage');//->middleware('admin_permission');
+    Route::post('/{id}/upload-image', 'uploadImage')->middleware('admin_permission');
     Route::get('/{id}/images', 'getImage');
     Route::get('/{id}/statistic','getStatisticByCategory');
 });
@@ -75,6 +75,7 @@ Route::controller(UserController::class)->prefix('users')->group(function (){
     Route::post('/{id}/upload-image', 'uploadImage')->middleware('auth_jwt');
     Route::get('/{id}/images', 'getImage');
     Route::patch('/status/{id}','updateStatus')->middleware('auth_jwt');
+    Route::patch('/info','updateProfile')->middleware('auth_jwt');
 });
 
 Route::controller(TagController::class)->prefix('tags')->group(function (){

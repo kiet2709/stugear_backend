@@ -79,4 +79,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return $result;
     }
 
+    public function updateContactDetail($data, $userId)
+    {
+        $result = DB::table('contact_details')->where('user_id',$userId)
+        ->update($data);
+        return $result;
+    }
+
 }

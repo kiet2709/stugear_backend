@@ -13,4 +13,6 @@ interface UserRepositoryInterface extends RepositoryInterface
     public function getUserWithContactDetailById($id);
     public function getContactDetail($userId);
 
+    public function updateContactDetail($data, $userId);
+
 }

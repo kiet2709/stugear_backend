@@ -119,4 +119,59 @@ class UserController extends Controller
             'message' => 'Cập nhật trạng thái người dùng thành công',
         ]);
     }
+
+    public function updateProfile(Request $request){
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'string',
+            'last_name' => 'string',
+            'gender' => 'in:0,1',
+            'birthdate' => 'date',
+        ]);
+
+        if ($validator->fails()) {
+             return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $user = $this->userRepository->getById($userId);
+
+        $dataUser = [
+            'first_name' => $request->first_name ?? $user->first_name,
+            'last_name' => $request->first_name ?? $user->last_name,
+            'updated_at' => Carbon::now(),
+            'updated_by' => $userId,
+        ];
+
+        $userInfo = $this->userRepository->getContactDetail($userId);
+
+        $ward = $request->ward ?? $userInfo->ward;
+        $district = $request->district ?? $userInfo->district;
+        $city = $request->city ?? $userInfo->city;
+        $province = $request->province ?? $userInfo->province;
+
+        $dataContactUser = [
+            'gender' => $request->gender ?? $userInfo->gender,
+            'phone_number' => $request->phone_number ?? $userInfo->phone_number,
+            'birthdate' => $request->birthdate ?? $userInfo->birthdate,
+            'ward' => $ward,
+            'district' => $district,
+            'city' => $city,
+            'province' => $province,
+            'full_address' => $ward . ' ' . $district . ' ' . $city . ' ' . $province,
+            'social_link' => $request->social_link ?? $userInfo->social_link,
+            'updated_at' => Carbon::now(),
+            'updated_by' => $userId,
+        ];
+
+        $this->userRepository->save($dataUser,$userId);
+        $this->userRepository->updateContactDetail($dataContactUser, $userId);
+
+        return response()->json([
+            'status'=> 'Thành công',
+            'message'=> 'Cập nhật thông tin thành công',
+        ]);
+    }
 }
