@@ -4,6 +4,7 @@ namespace App\Repositories\Product;
 
 use App\Models\Product;
 use App\Repositories\BaseRepository;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class ProductRepository extends BaseRepository implements ProductRepositoryInterface
@@ -31,7 +32,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         return $products;
     }
 
-    public function attachTag($id, $tags)
+    public function attachTag($id, $tags, $userId)
     {
         $product = $this->model->find($id);
         if (empty($tags)) {
@@ -57,6 +58,10 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             $insertData[] = [
                 'product_id' => $id,
                 'tag_id' => $tag,
+                'created_at' => Carbon::now(),
+                'updated_at'=> Carbon::now(),
+                'created_by' => $userId,
+                'updated_by' => $userId
             ];
         }
         DB::table('product_tags')->insert($insertData);

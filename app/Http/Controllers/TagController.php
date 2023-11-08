@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\Tag\TagRepositoryInterface;
+use App\Util\AuthService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,13 +19,10 @@ class TagController extends Controller
     }
     public function create(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required|integer|min:1',
-        ]);
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
 
-        if ($validator->fails()) {
-             return response()->json(['error' => $validator->errors()], 400);
-        }
         $colors = [
             'bg-primary',
             'bg-secondary',
@@ -37,43 +35,31 @@ class TagController extends Controller
             'bg-white'
         ];
 
-        if (!in_array($request->color, $colors)) {
-            return response()->json([
-                'status' => 'error',
-                'message'=> 'Định dạng màu không đúng'
-            ]);
+        $tagNames = $request->names;
+        $tagIDs = [];
+        foreach ($tagNames as $tagName) {
+            $tag = $this->tagRepository->findByTagName($tagName);
+
+            if ($tag) {
+                $tagIDs[] = $tag->id;
+            } else {
+                $tagID = $this->tagRepository->save([
+                    'name' => $tagName,
+                    'color'=> $colors[array_rand($colors)],
+                    'created_by' => $userId,
+                    'updated_by' => $userId,
+                    'created_at' => Carbon::now(),
+                    'updated_at'=> Carbon::now()
+                ]);
+                $tagIDs[] = $tagID->id;
+            }
         }
 
-        $tag = $this->tagRepository->findByTagName($request->name);
-
-        if ($tag) {
-            return response()->json([
-                'status' => 'error',
-                'message'=> 'Tag có rồi, không được thêm nữa!'
-            ]);
-        }
-
-        $tag = $this->tagRepository->save([
-            'name' => $request->name,
-            'color'=> $request->color,
-            'created_by' => $request->user_id,
-            'updated_by' => $request->user_id,
-            'created_at' => Carbon::now(),
-            'updated_at'=> Carbon::now()
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Tạo tag thành công',
+            'data' => $tagIDs
         ]);
-
-        if (!$tag) {
-            return response()->json([
-                'status' => 'fail',
-                'message' => 'Tạo tag thất bại',
-            ]);
-        } else {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Tạo tag thành công',
-                'data' => $tag
-            ]);
-        }
     }
 
     public function view($id)

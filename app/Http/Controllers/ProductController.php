@@ -637,7 +637,7 @@ class ProductController extends Controller
             ], 400);
         }
 
-        $result = $this->productRepository->attachTag($id, $request->tags);
+        $result = $this->productRepository->attachTag($id, $request->tags, $userId);
 
         return response()->json([
             'status'=> 'success',
