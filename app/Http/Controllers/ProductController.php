@@ -421,7 +421,7 @@ class ProductController extends Controller
             ], 400);
         }
 
-        if (!in_array($request->condition, [0,1]) || $request->condition != null) {
+        if (!in_array($request->condition, [0,1]) && $request->condition != null) {
             return response()->json([
                 'status'=> 'Lỗi',
                 'message'=> 'Condition không đúng định dạng'
