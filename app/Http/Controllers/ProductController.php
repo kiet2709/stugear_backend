@@ -50,7 +50,7 @@ class ProductController extends Controller
             // }
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
+            $memberData['product_image'] = $product->image_id != null ? AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images' : '';
             $memberData['price'] = $product->price;
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $product->productTags;
@@ -91,7 +91,7 @@ class ProductController extends Controller
             $data = [];
             $data['id'] = $product->id;
             $data['title'] = $product->name;
-            $data['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
+            $data['product_image'] = $product->image_id != null ? AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images' : '';
             $data['price'] = $product->price;
             $data['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
@@ -167,7 +167,7 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
+            $memberData['product_image'] = $product->image_id != null ? AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images' : '';
             $memberData['price'] = number_format($product->price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
@@ -239,7 +239,7 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
+            $memberData['product_image'] = $product->image_id != null ? AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images' : '';
             $memberData['price'] = $product->price;
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
