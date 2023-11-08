@@ -58,9 +58,16 @@ class CategoryController extends Controller
 
     public function uploadImage(Request $request, $id){
         $message = ImageService::uploadImage($request, $id, AppConstant::$UPLOAD_DIRECTORY_CATEGORY_IMAGE, 'categories');
+
+        if ($message == AppConstant::$UPLOAD_FAILURE) {
+            $statusCode = 400;
+        } else {
+            $statusCode = 200;
+        }
+
         return response()->json([
             'message' => $message
-        ]);
+        ], $statusCode);
     }
     public function getImage($id){
         $path = ImageService::getPathImage($id, 'categories');
@@ -96,6 +103,6 @@ class CategoryController extends Controller
 
     public function create(Request $request)
     {
-        
+
     }
 }
