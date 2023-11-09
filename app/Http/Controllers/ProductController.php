@@ -376,19 +376,24 @@ class ProductController extends Controller
         if (isset($filter['field']) && isset($filter['sort'])) {
             $query->orderBy($filter['field'],$filter['sort']);
         }
-            $query->where('products.name','LIKE','%' . $request->q . '%')
-                ->orWhere('users.name','LIKE','%'. $request->q . '%');
+
             $query->whereNotIn('products.status', [0, 1, 2, 5]);
             $query->select('products.id', 'products.price', 'products.image_id',
                 'products.status', 'products.description', 'products.brand',
                 'products.transaction_id','products.updated_at', 'products.condition',
                 'products.user_id', 'products.quantity', 'products.name','products.category_id');
             $query->where('products.category_id', $request->category_id);
-
-        $products = $query->get();
+            $query->where(function($q) use ($request) {
+                $q->where('products.name', 'LIKE', '%' . $request->q . '%')
+                    ->orWhere('users.name', 'LIKE', '%' . $request->q . '%');
+            });
+        $limit = $request->limit ?? 10;
+        $products = $query->paginate($limit);
         $data = [];
         $memberData = [];
+        $countProductPerPage = 0;
         foreach ($products as $product) {
+            $countProductPerPage++;
             $memberData['id'] = $product->id;
             $memberData['category'] = $product->category_id;
             $memberData['title'] = $product->name;
@@ -419,7 +424,10 @@ class ProductController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Lấy dữ liệu thành công',
-            'data' => $data
+            'data' => $data,
+            'page' => $request->page ?? 1,
+            'total_items' => $countProductPerPage,
+            'total_pages' => $products->lastPage()
         ]);
     }
 
