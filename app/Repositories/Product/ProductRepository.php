@@ -76,7 +76,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     {
         $result = DB::table('products')
         ->where('category_id', $id)
-        ->whereNotIn('status', [0, 1, 5])
+        ->whereNotIn('status', [0, 1, 2, 5])
         ->paginate($limit);
         return $result;
     }

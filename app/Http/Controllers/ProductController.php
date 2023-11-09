@@ -50,7 +50,7 @@ class ProductController extends Controller
             // }
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = $product->image_id != null ? AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images' : '';
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $product->productTags;
@@ -91,7 +91,7 @@ class ProductController extends Controller
             $data = [];
             $data['id'] = $product->id;
             $data['title'] = $product->name;
-            $data['product_image'] = $product->image_id != null ? AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images' : '';
+            $data['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $data['price'] = $product->price;
             $data['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
@@ -137,14 +137,21 @@ class ProductController extends Controller
         ], $statusCode);
     }
     public function getImage($id) {
-        $path = ImageService::getPathImage($id, 'products');
-        if (str_contains($path, 'uploads')){
+        $product = $this->productRepository->getById($id);
+        if ($product->image_id == null) {
+            $imageData = file_get_contents(AppConstant::$PRODUCT_THUMBNAIL);
             header('Content-Type: image/jpeg');
-            readfile($path);
+            echo $imageData;
         } else {
-            return response()->json([
-                'message' => $path
-            ]);
+            $path = ImageService::getPathImage($id, 'products');
+            if (str_contains($path, 'uploads')){
+                header('Content-Type: image/jpeg');
+                readfile($path);
+            } else {
+                return response()->json([
+                    'message' => $path
+                ]);
+            }
         }
     }
 
@@ -167,7 +174,7 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = $product->image_id != null ? AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images' : '';
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = number_format($product->price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
@@ -239,7 +246,7 @@ class ProductController extends Controller
         foreach ($products as $product) {
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
-            $memberData['product_image'] = $product->image_id != null ? AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images' : '';
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
@@ -279,7 +286,7 @@ class ProductController extends Controller
             $memberData['owner_name'] = $product->user->name;
             $memberData['owner_id'] = $product->user->id;
             $memberData['quantity'] = $product->quantity;
-            $memberData['condition'] = $product->status == 0 ? 'Mới' : 'Đã sử dụng';
+            $memberData['condition'] = $product->condition == 0 ? 'Mới' : 'Đã sử dụng';
             $memberData['transaction_method'] = $product->transaction_id == 0 ? 'Trực tiếp' : 'Trên trang web';
             array_push($data, $memberData);
         }
@@ -325,6 +332,94 @@ class ProductController extends Controller
             'status' => 'success',
             'message' => 'Lấy dữ liệu thành công',
             'data' => $products
+        ]);
+    }
+
+    public function searchInCategory(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+             return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $query = Product::query();
+        if ($request->transaction_method == 'cash')
+        {
+            $transaction_method = [1];
+        } else if ($request->transaction_method == 'online') {
+            $transaction_method = [2];
+        } else {
+            $transaction_method = [1,2];
+        }
+        $sort = [];
+        if ($request->field == 'lastUpdate' && $request->sort == 'increase')
+        {
+            $filter = ['field' => 'updated_at', 'sort' => 'ASC'];
+        }
+        if ($request->field == 'lastUpdate' && $request->sort == 'decrease')
+        {
+            $filter = ['field' => 'updated_at', 'sort' => 'DESC'];
+        }
+        if ($request->field == 'price' && $request->sort == 'increase')
+        {
+            $filter = ['field' => 'price', 'sort' => 'ASC'];
+        }
+        if ($request->field == 'price' && $request->sort == 'decrease')
+        {
+            $filter = ['field' => 'price', 'sort' => 'DESC'];
+        }
+        $query->join('users','users.id','=','products.user_id');
+            $query->whereIn('products.transaction_id', $transaction_method);
+        if (isset($filter['field']) && isset($filter['sort'])) {
+            $query->orderBy($filter['field'],$filter['sort']);
+        }
+            $query->where('products.name','LIKE','%' . $request->q . '%')
+                ->orWhere('users.name','LIKE','%'. $request->q . '%');
+            $query->whereNotIn('products.status', [0, 1, 2, 5]);
+            $query->select('products.id', 'products.price', 'products.image_id',
+                'products.status', 'products.description', 'products.brand',
+                'products.transaction_id','products.updated_at', 'products.condition',
+                'products.user_id', 'products.quantity', 'products.name','products.category_id');
+            $query->where('products.category_id', $request->category_id);
+
+        $products = $query->get();
+        $data = [];
+        $memberData = [];
+        foreach ($products as $product) {
+            $memberData['id'] = $product->id;
+            $memberData['category'] = $product->category_id;
+            $memberData['title'] = $product->name;
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
+            $memberData['price'] = $product->price;
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
+            $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
+            $tags = [];
+            $count = 0;
+            foreach ($productTags as $productTag) {
+                if ($count == 3) break;
+                $tag = $this->tagRepository->getById($productTag->tag_id);
+                $tagMember['name'] = $tag->name;
+                $tagMember['color'] = $tag->color;
+                array_push($tags, $tagMember);
+                $count++;
+            }
+            $memberData['tags'] = $tags;
+            $memberData['description'] = $product->description ?? '';
+            $memberData['status'] = $product->status;
+            $memberData['brand'] = $product->brand ?? '';
+            $memberData['last_updated'] = Carbon::parse($product->updated_at)->format('d/m/Y');
+            $user = $this->userRepository->getById($product->user_id);
+            $memberData['owner_name'] = $user->name;
+            $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
+            array_push($data, $memberData);
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $data
         ]);
     }
 
@@ -739,7 +834,5 @@ class ProductController extends Controller
                 'message' => 'Cập nhật sản phẩm thành công',
             ]);
         }
-
     }
-
 }

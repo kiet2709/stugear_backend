@@ -94,14 +94,28 @@ class UserController extends Controller
         ], $statusCode);
     }
     public function getImage($id){
-        $path = ImageService::getPathImage($id, 'users');
-        if (str_contains($path, 'uploads')){
+        $user = $this->userRepository->getById($id);
+        if ($user->image == null) {
+            $userInfo = $this->userRepository->getContactDetail($id);
+            if ($userInfo->gender == null || $userInfo->gender == 0) {
+                $imageData = file_get_contents(AppConstant::$AVATAR_MALE);
+            } else {
+                $imageData = file_get_contents(AppConstant::$AVATAR_FEMALE);
+            }
+
             header('Content-Type: image/jpeg');
-            readfile($path);
+
+            echo $imageData;
         } else {
-            return response()->json([
-                'message' => $path
-            ]);
+            $path = ImageService::getPathImage($id, 'users');
+            if (str_contains($path, 'uploads')){
+                header('Content-Type: image/jpeg');
+                readfile($path);
+            } else {
+                return response()->json([
+                    'message' => $path
+                ]);
+            }
         }
     }
 
