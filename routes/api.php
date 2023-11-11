@@ -56,6 +56,7 @@ Route::controller(ProductController::class)->prefix('products')->group(function 
     Route::patch('/{id}/attach-tag','attachTag')->middleware('auth_jwt');
     Route::post('/{id}/upload-image', 'uploadImage')->middleware('auth_jwt');
     Route::get('/{id}/images', 'getImage');
+    Route::delete('/{id}', 'delete')->middleware('auth_jwt');
 });
 
 Route::controller(VerifyController::class)->prefix('products')->group(function (){

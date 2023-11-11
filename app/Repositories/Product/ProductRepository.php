@@ -28,7 +28,10 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
     public function searchByName($q)
     {
-        $products = $this->model->where('name','LIKE','%'. $q .'%')->get();
+        $products = $this->model->where('name','LIKE','%'. $q .'%')
+        ->whereNull('deleted_by')
+        ->whereNull('deleted_at')
+        ->get();
         return $products;
     }
 
@@ -77,6 +80,8 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         $result = DB::table('products')
         ->where('category_id', $id)
         ->whereNotIn('status', [0, 1, 2, 5])
+        ->whereNull('deleted_by')
+        ->whereNull('deleted_at')
         ->paginate($limit);
         return $result;
     }
@@ -84,7 +89,10 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     public function getProductTagsByProductId($id)
     {
         $result = DB::table('product_tags')
-            ->where('product_id', $id)->get();
+            ->where('product_id', $id)
+            ->whereNull('deleted_by')
+            ->whereNull('deleted_at')
+            ->get();
         return $result;
     }
 
@@ -92,6 +100,8 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
     {
         $result = DB::table('products')
         ->where('user_id', $userId)
+        ->whereNull('deleted_by')
+        ->whereNull('deleted_at')
         ->paginate($limit);
         return $result;
     }

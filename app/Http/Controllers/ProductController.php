@@ -52,6 +52,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
+            $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $product->productTags;
             $tags = [];
@@ -93,6 +94,7 @@ class ProductController extends Controller
             $data['title'] = $product->name;
             $data['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $data['price'] = $product->price;
+            $data['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $data['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
             $tags = [];
@@ -176,6 +178,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = number_format($product->price) . ' VNĐ';
+            $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
             $tags = [];
@@ -248,6 +251,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
+            $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
             $tags = [];
@@ -399,6 +403,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = $product->price;
+            $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
             $tags = [];
@@ -656,6 +661,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = number_format($product->price) . ' VNĐ';
+            $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
             $tags = [];
@@ -842,5 +848,43 @@ class ProductController extends Controller
                 'message' => 'Cập nhật sản phẩm thành công',
             ]);
         }
+    }
+
+    public function delete(Request $request, $id)
+    {
+        $token = $request->header();
+        $bareToken = substr($token['authorization'][0], 7);
+        $userId = AuthService::getUserId($bareToken);
+
+        $role = DB::table('user_roles')
+        ->where('user_id', $userId)
+        ->join('roles', 'user_roles.role_id', '=', 'roles.id')
+        ->pluck('roles.role_name')
+        ->toArray();
+
+        $product = $this->productRepository->getById($id);
+        if (!$product || $product->deleted_at != null || $product->deleted_by != null) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message'=> 'Không tìm thấy sản phẩm này để xóa!',
+            ], 400);
+        }
+
+        if ($product->user_id != $userId && in_array('USER', $role)) {
+            return response()->json([
+                'status'=> 'Lỗi',
+                'message'=> 'Không thể xóa sản phẩm của người khác trừ khi là Admin!',
+            ]);
+        }
+
+        $this->productRepository->save([
+            'deleted_at' => Carbon::now(),
+            'deleted_by' => $userId
+        ], $id);
+
+        return response()->json([
+            'status'=> 'Thành công',
+            'message'=> 'Xóa sản phẩm thành công'
+        ]);
     }
 }
