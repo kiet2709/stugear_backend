@@ -45,9 +45,6 @@ class ProductController extends Controller
         $data = [];
         $memberData = [];
         foreach ($products as $product) {
-            // if ($product->status == 1 || $product->status == 0 || $product->status == 5) {
-            //     continue;
-            // }
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
@@ -57,6 +54,7 @@ class ProductController extends Controller
             $productTags = $product->productTags;
             $tags = [];
             foreach ($productTags as $productTag) {
+                $tagMember['id'] = $productTag->tag_id;
                 $tagMember['name'] = $productTag->tag->name;
                 $tagMember['color'] = $productTag->tag->color;
                 array_push($tags, $tagMember);
@@ -101,6 +99,7 @@ class ProductController extends Controller
             $count = 0;
             foreach ($productTags as $productTag) {
                 if ($count == 3) break;
+                $tagMember['id'] = $productTag->tag_id;
                 $tagMember['name'] = $productTag->tag->name;
                 $tagMember['color'] = $productTag->tag->color;
                 array_push($tags, $tagMember);
@@ -186,6 +185,7 @@ class ProductController extends Controller
             foreach ($productTags as $productTag) {
                 if ($count == 3) break;
                 $tag = $this->tagRepository->getById($productTag->tag_id);
+                $tagMember['id'] = $productTag->tag_id;
                 $tagMember['name'] = $tag->name;
                 $tagMember['color'] = $tag->color;
                 array_push($tags, $tagMember);
@@ -256,6 +256,7 @@ class ProductController extends Controller
             $productTags = $product->productTags;
             $tags = [];
             foreach ($productTags as $productTag) {
+                $tagMember['id'] = $productTag->tag_id;
                 $tagMember['name'] = $productTag->tag->name;
                 $tagMember['color'] = $productTag->tag->color;
                 array_push($tags, $tagMember);
@@ -411,6 +412,7 @@ class ProductController extends Controller
             foreach ($productTags as $productTag) {
                 if ($count == 3) break;
                 $tag = $this->tagRepository->getById($productTag->tag_id);
+                $tagMember['id'] = $productTag->tag_id;
                 $tagMember['name'] = $tag->name;
                 $tagMember['color'] = $tag->color;
                 array_push($tags, $tagMember);
@@ -669,6 +671,7 @@ class ProductController extends Controller
             foreach ($productTags as $productTag) {
                 if ($count == 3) break;
                 $tag = $this->tagRepository->getById($productTag->tag_id);
+                $tagMember['id'] = $productTag->tag_id;
                 $tagMember['name'] = $tag->name;
                 $tagMember['color'] = $tag->color;
                 array_push($tags, $tagMember);
