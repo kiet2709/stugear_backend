@@ -48,7 +48,8 @@ class ProductController extends Controller
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
-            $memberData['price'] = $product->price;
+            $memberData['price'] = number_format($product->price) . ' VNĐ';
+            $memberData['condition'] = $product->condition == 1 ? 'Cũ' : 'Mới';
             $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $product->productTags;
@@ -91,7 +92,8 @@ class ProductController extends Controller
             $data['id'] = $product->id;
             $data['title'] = $product->name;
             $data['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
-            $data['price'] = $product->price;
+            $data['price'] = number_format($product->price) . ' VNĐ';
+            $data['condition'] = $product->condition == 1 ? 'Cũ' : 'Mới';
             $data['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $data['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
@@ -114,7 +116,6 @@ class ProductController extends Controller
             $data['owner_name'] = $product->user->name;
             $data['owner_id'] = $product->user->id;
             $data['quantity'] = $product->quantity;
-            $data['condition'] = $product->status == 0 ? 'Mới' : 'Đã sử dụng';
             $data['transaction_method'] = $product->transaction_id == 0 ? 'Trực tiếp' : 'Trên trang web';
             return response()->json([
                 'status'=> 'success',
@@ -177,6 +178,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = number_format($product->price) . ' VNĐ';
+            $memberData['condition'] = $product->condition == 1 ? 'Cũ' : 'Mới';
             $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
@@ -250,7 +252,8 @@ class ProductController extends Controller
             $memberData['id'] = $product->id;
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
-            $memberData['price'] = $product->price;
+            $memberData['price'] = number_format($product->price) . ' VNĐ';
+            $memberData['condition'] = $product->condition == 1 ? 'Cũ' : 'Mới';
             $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 10000000));
             $productTags = $product->productTags;
@@ -291,7 +294,6 @@ class ProductController extends Controller
             $memberData['owner_name'] = $product->user->name;
             $memberData['owner_id'] = $product->user->id;
             $memberData['quantity'] = $product->quantity;
-            $memberData['condition'] = $product->condition == 0 ? 'Mới' : 'Đã sử dụng';
             $memberData['transaction_method'] = $product->transaction_id == 0 ? 'Trực tiếp' : 'Trên trang web';
             array_push($data, $memberData);
         }
@@ -403,7 +405,8 @@ class ProductController extends Controller
             $memberData['category'] = $product->category_id;
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
-            $memberData['price'] = $product->price;
+            $memberData['price'] = number_format($product->price) . ' VNĐ';
+            $memberData['condition'] = $product->condition == 1 ? 'Cũ' : 'Mới';
             $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
@@ -443,7 +446,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'price' => 'required|integer|min:1',
-            'condition' => 'required|in:0,1',
+            'condition' => 'required|in:1,2',
             'edition' => 'required',
             'status' => 'required|integer',
             'origin_price' => 'required|integer|min:1',
@@ -663,6 +666,7 @@ class ProductController extends Controller
             $memberData['title'] = $product->name;
             $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
             $memberData['price'] = number_format($product->price) . ' VNĐ';
+            $memberData['condition'] = $product->condition == 1 ? 'Cũ' : 'Mới';
             $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
             $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
             $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
@@ -793,7 +797,7 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'string',
             'price' => 'integer|min:1',
-            'condition' => 'in:0,1',
+            'condition' => 'in:1,2',
             'origin_price' => 'integer|min:1',
             'status' => 'required|integer|min:0',
             'quantity' => 'integer|min:1',
@@ -888,6 +892,102 @@ class ProductController extends Controller
         return response()->json([
             'status'=> 'Thành công',
             'message'=> 'Xóa sản phẩm thành công'
+        ]);
+    }
+
+    public function searchWithCriteria(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'category_id' => 'integer',
+            'status' => 'integer',
+            'price_from' => 'integer',
+            'price_to' => 'integer',
+            'date_from' => 'date',
+            'date_to' => 'date',
+            'transaction_method' => 'array',
+            'tags' => 'array',
+            'condition' => 'array'
+        ]);
+
+        if ($validator->fails()) {
+             return response()->json(['error' => $validator->errors()], 400);
+        }
+        $limit = $request->limit ?? 9;
+        $products = $this->productRepository->searchWithCriteria($request, $limit);
+
+        if ($products == 'condition') {
+            return response()->json([
+                'status' => 'Lỗi',
+                'message' => 'Không tồn tại tình trạng sản phẩm này'
+            ], 400);
+        }
+
+        if ($products == 'transaction_method') {
+            return response()->json([
+                'status' => 'Lỗi',
+                'message' => 'Không tồn tại phương thức giao dịch này'
+            ], 400);
+        }
+
+        $data = [];
+        $memberData = [];
+        foreach ($products as $product) {
+            $memberData['id'] = $product->id;
+            $memberData['title'] = $product->name;
+            $memberData['product_image'] = AppConstant::$DOMAIN . 'api/products/' . $product->id . '/images';
+            $memberData['price'] = number_format($product->price) . ' VNĐ';
+            $memberData['condition'] = $product->condition == 1 ? 'Cũ' : 'Mới';
+            $memberData['origin_price'] =  number_format($product->origin_price) . ' VNĐ';
+            $memberData['comment_count'] = count($this->commentRepository->getCommentByProductId($product->id, 100000000));
+            $productTags = $this->productRepository->getProductTagsByProductId( $product->id );
+            $tags = [];
+            $count = 0;
+            foreach ($productTags as $productTag) {
+                if ($count == 3) break;
+                $tag = $this->tagRepository->getById($productTag->tag_id);
+                $tagMember['id'] = $productTag->tag_id;
+                $tagMember['name'] = $tag->name;
+                $tagMember['color'] = $tag->color;
+                array_push($tags, $tagMember);
+                $count++;
+            }
+            $memberData['tags'] = $tags;
+            $memberData['description'] = $product->description ?? '';
+            $result = '';
+            switch ($product->status) {
+                case 0:
+                    $result = 'Chặn';
+                    break;
+                case 1:
+                    $result = 'Nháp';
+                    break;
+                case 2:
+                    $result = 'Chờ duyệt';
+                    break;
+                case 3:
+                    $result = 'Đã duyệt';
+                    break;
+                case 4:
+                    $result = 'Đã bán';
+                    break;
+                case 5:
+                    $result = 'Đã thanh toán';
+                    break;
+            }
+            $memberData['status'] = $result;
+            $memberData['brand'] = $product->brand ?? '';
+            $memberData['last_updated'] = Carbon::parse($product->updated_at)->format('d/m/Y');
+            $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
+            array_push($data, $memberData);
+        }
+
+        return response()->json([
+            'status' => 'Thành công',
+            'message' => 'Lấy dữ liệu thành công',
+            'data' => $data,
+            'page' => $request->page ?? 1,
+            'total_page' => $products->lastPage(),
+            'total_items' => count($products)
         ]);
     }
 }

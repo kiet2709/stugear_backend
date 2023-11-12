@@ -95,7 +95,7 @@ class UserController extends Controller
     }
     public function getImage($id){
         $user = $this->userRepository->getById($id);
-        if ($user->image == null) {
+        if ($user->image_id == null) {
             $userInfo = $this->userRepository->getContactDetail($id);
             if ($userInfo->gender == null || $userInfo->gender == 0) {
                 $imageData = file_get_contents(AppConstant::$AVATAR_MALE);

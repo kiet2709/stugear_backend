@@ -44,16 +44,6 @@ class Product extends Model
         'deleted_at',
         'deleted_by'
     ];
-    public function getPriceAttribute()
-    {
-        // Retrieve the price from the database
-        $price = $this->attributes['price'];
-
-        // Format the price as desired (adding commas and appending 'VNĐ')
-        $formattedPrice = number_format($price) . ' VNĐ';
-
-        return $formattedPrice;
-    }
 
     public function getUpdatedAtAttribute($value)
     {
