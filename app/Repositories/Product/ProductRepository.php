@@ -130,6 +130,21 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             $query->where('products.status', $request->status);
         }
 
+        if ($request->status != null || !empty($request->status)) {
+            foreach ($request->status as $status) {
+                if ($status == 0 ||
+                $status == 1 ||
+                $status == 4 ||
+                $status == 5) {
+                    return "status";
+                }
+            }
+            $query->whereIn('products.status', $request->status);
+        }
+
+
+
+
         if ($request->category_id != null || !empty($request->tags)) {
             $query->whereIn('products.category_id', $request->category_id);
         }
@@ -179,12 +194,15 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
 // ---------------- begin handle price method --------------------
 
-
-        if ($request->price_from != null) {
+        if ($request->price_from == "") {
+            $query->where('products.price', '>=', 0);
+        } else if ($request->price_from != null) {
             $query->where('products.price', '>=', $request->price_from);
         }
 
-        if ($request->price_to != null) {
+        if ($request->price_to == "") {
+            $query->where('products.price', '<=', 1000000000);
+        } else if ($request->price_to != null) {
             $query->where('products.price', '<=', $request->price_to);
         }
 
@@ -195,6 +213,9 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
 
 
         if ($request->date_from != null) {
+            if ($request->date_from == "") {
+                $dateFrom = Carbon::createFromFormat('d/m/Y', '1/1/2016')->startOfDay();
+            }
             if (strpos($request->date_from, '/') !== false) {
                 // Nếu có dấu '/', sử dụng định dạng d/m/y
                 $dateFrom = Carbon::createFromFormat('d/m/Y', $request->date_from)->startOfDay();
@@ -207,6 +228,9 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         }
 
         if ($request->date_to != null) {
+            if ($request->date_to == "") {
+                $dateTo = Carbon::now()->endOfDay();
+            }
             if (strpos($request->date_to, '/') !== false) {
                 // Nếu có dấu '/', sử dụng định dạng d/m/y
                 $dateTo = Carbon::createFromFormat('d/m/Y', $request->date_to)->startOfDay();

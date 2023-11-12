@@ -384,7 +384,7 @@ class ProductController extends Controller
             $query->orderBy($filter['field'],$filter['sort']);
         }
 
-            $query->whereNotIn('products.status', [0, 1, 2, 5]);
+            $query->whereNotIn('products.status', [0, 1, 4, 5]);
             $query->select('products.id', 'products.price', 'products.image_id',
                 'products.status', 'products.description', 'products.brand',
                 'products.transaction_id','products.updated_at', 'products.condition',
@@ -394,6 +394,8 @@ class ProductController extends Controller
                 $q->where('products.name', 'LIKE', '%' . $request->q . '%')
                     ->orWhere('users.name', 'LIKE', '%' . $request->q . '%');
             });
+        $query->whereNull('products.deleted_by');
+        $query->whereNull('products.deleted_at');
         $limit = $request->limit ?? 10;
         $products = $query->paginate($limit);
         $data = [];
@@ -897,21 +899,61 @@ class ProductController extends Controller
 
     public function searchWithCriteria(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'category_id' => 'array',
-            'status' => 'integer',
-            'price_from' => 'integer',
-            'price_to' => 'integer',
-            'date_from' => 'date',
-            'date_to' => 'date',
-            'transaction_method' => 'array',
-            'tags' => 'array',
-            'condition' => 'array'
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'category_id' => 'array',
+        //     'status' => 'integer',
+        //     'price_from' => 'required',
+        //     'price_to' => 'required',
+        //     'date_from' => 'date',
+        //     'date_to' => 'date',
+        //     'transaction_method' => 'array',
+        //     'tags' => 'array',
+        //     'condition' => 'array'
+        // ]);
 
-        if ($validator->fails()) {
-             return response()->json(['error' => $validator->errors()], 400);
+        // if ($validator->fails()) {
+        //      return response()->json(['error' => $validator->errors()], 400);
+        // }
+
+        if ($request->price_from != "") {
+            if (!is_numeric($request->price_from)) {
+                return response()->json([
+                    'status' => 'Lỗi',
+                    'message' => 'Price from phải là số'
+                ], 400);
+            }
         }
+
+        if ($request->price_to != "") {
+            if (!is_numeric($request->price_to)) {
+                return response()->json([
+                    'status' => 'Lỗi',
+                    'message' => 'Price to phải là số'
+                ], 400);
+            }
+        }
+
+        // NHỚ VALIDATE LẠI KHI CÓ TIME, DATEFROM, DATETO, ... MỚ Ở TRÊN
+        // if ($request->date_from != "") {
+        //     // dd(111);
+        //     if (!strtotime($request->date_from)) {
+        //         return response()->json([
+        //             'status' => 'Lỗi',
+        //             'message' => 'Date from phải là kiểu date'
+        //         ], 400);
+        //     }
+        // }
+
+        // if ($request->date_to != "") {
+        //     if (!date_parse($request->date_to)) {
+        //         return response()->json([
+        //             'status' => 'Lỗi',
+        //             'message' => 'Date to phải là kiểu date'
+        //         ], 400);
+        //     }
+        // }
+
+
         $limit = $request->limit ?? 9;
         $products = $this->productRepository->searchWithCriteria($request, $limit);
 
@@ -926,6 +968,13 @@ class ProductController extends Controller
             return response()->json([
                 'status' => 'Lỗi',
                 'message' => 'Không tồn tại phương thức giao dịch này'
+            ], 400);
+        }
+
+        if ($products == 'status') {
+            return response()->json([
+                'status' => 'Lỗi',
+                'message' => 'Không tồn tại trạng thái sản phẩm này'
             ], 400);
         }
 
