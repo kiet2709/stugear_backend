@@ -1025,7 +1025,7 @@ class ProductController extends Controller
             }
             $memberData['status'] = $result;
             $memberData['brand'] = $product->brand ?? '';
-            $memberData['last_updated'] = Carbon::parse($product->updated_at)->format('d/m/Y');
+            $memberData['last_updated'] = $product->updated_at;
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
             array_push($data, $memberData);
         }

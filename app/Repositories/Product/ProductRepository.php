@@ -253,6 +253,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         return $query->select('products.*')
         ->distinct('products.id')
         ->paginate($limit);
+        // return $query;
     }
 
 }
