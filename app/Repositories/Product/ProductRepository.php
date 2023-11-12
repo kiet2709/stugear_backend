@@ -130,8 +130,8 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             $query->where('products.status', $request->status);
         }
 
-        if ($request->category_id != null) {
-            $query->where('products.category_id', $request->category_id);
+        if ($request->category_id != null || !empty($request->tags)) {
+            $query->whereIn('products.category_id', $request->category_id);
         }
 
         if ($request->tags != null || !empty($request->tags)) {

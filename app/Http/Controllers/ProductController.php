@@ -898,7 +898,7 @@ class ProductController extends Controller
     public function searchWithCriteria(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'category_id' => 'integer',
+            'category_id' => 'array',
             'status' => 'integer',
             'price_from' => 'integer',
             'price_to' => 'integer',
