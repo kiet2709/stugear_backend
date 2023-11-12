@@ -44,9 +44,9 @@ Route::controller(ProductController::class)->prefix('products')->group(function 
     Route::get('/all-transaction', 'getAllTransactionMethod');
     Route::get('/current', 'getProductByCurrentUser');
     Route::get('/search','searchByName');
-    Route::get('/category/search','searchInCategory');
+    Route::post('/category-search','searchInCategory');
     Route::get('/criteria','getByCriteria');
-    Route::get('/search-criteria','searchWithCriteria');
+    Route::post('/search-criteria','searchWithCriteria');
     Route::get('/category/{id}', 'getProductByCategoryId');
     Route::get('/tag/{id}','getProductByTagId');
     Route::get('/{id}', 'view');
