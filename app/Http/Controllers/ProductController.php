@@ -427,7 +427,7 @@ class ProductController extends Controller
             $memberData['description'] = $product->description ?? '';
             $memberData['status'] = $product->status;
             $memberData['brand'] = $product->brand ?? '';
-            $memberData['last_updated'] = Carbon::parse($product->updated_at)->format('d/m/Y');
+            $memberData['last_updated'] = $product->updated_at;
             $user = $this->userRepository->getById($product->user_id);
             $memberData['owner_name'] = $user->name;
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
@@ -439,7 +439,8 @@ class ProductController extends Controller
             'data' => $data,
             'page' => $request->page ?? 1,
             'total_items' => $countProductPerPage,
-            'total_pages' => $products->lastPage()
+            'total_pages' => $products->lastPage(),
+            'total_in_all_page' => $products->total()
         ]);
     }
 
@@ -1015,7 +1016,8 @@ class ProductController extends Controller
             'data' => $data,
             'page' => $request->page ?? 1,
             'total_page' => $products->lastPage(),
-            'total_items' => count($products)
+            'total_items' => count($products),
+            'total_in_all_page' => $products->total()
         ]);
     }
 }
