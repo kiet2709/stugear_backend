@@ -384,7 +384,7 @@ class ProductController extends Controller
             $query->orderBy($filter['field'],$filter['sort']);
         }
 
-            $query->whereNotIn('products.status', [0, 1, 4, 5]);
+            $query->whereNotIn('products.status', [0, 1, 2, 5]);
             $query->select('products.id', 'products.price', 'products.image_id',
                 'products.status', 'products.description', 'products.brand',
                 'products.transaction_id','products.updated_at', 'products.condition',
@@ -1002,28 +1002,7 @@ class ProductController extends Controller
             }
             $memberData['tags'] = $tags;
             $memberData['description'] = $product->description ?? '';
-            $result = '';
-            switch ($product->status) {
-                case 0:
-                    $result = 'Chặn';
-                    break;
-                case 1:
-                    $result = 'Nháp';
-                    break;
-                case 2:
-                    $result = 'Chờ duyệt';
-                    break;
-                case 3:
-                    $result = 'Đã duyệt';
-                    break;
-                case 4:
-                    $result = 'Đã bán';
-                    break;
-                case 5:
-                    $result = 'Đã thanh toán';
-                    break;
-            }
-            $memberData['status'] = $result;
+            $memberData['status'] = $product->status;
             $memberData['brand'] = $product->brand ?? '';
             $memberData['last_updated'] = $product->updated_at;
             $memberData['owner_image'] = AppConstant::$DOMAIN . 'api/users/' . $product->user_id . '/images';;
