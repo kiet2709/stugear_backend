@@ -38,6 +38,11 @@ Route::controller(CategoryController::class)->prefix('categories')->group(functi
     Route::get('/{id}/statistic','getStatisticByCategory');
 });
 
+Route::controller(VerifyController::class)->prefix('products')->group(function (){
+    Route::get('/send-verify-email','sendVerifyEmail');
+    Route::post('/verify-email','verifyEmail');
+});
+
 Route::controller(ProductController::class)->prefix('products')->group(function (){
     Route::get('/', 'index');
     Route::get('/all-status', 'getAllStatusProduct');
@@ -60,10 +65,6 @@ Route::controller(ProductController::class)->prefix('products')->group(function 
     Route::delete('/{id}', 'delete')->middleware('auth_jwt');
 });
 
-Route::controller(VerifyController::class)->prefix('products')->group(function (){
-    Route::get('/send-verify-email','sendVerifyEmail');
-    Route::post('/verify-email','verifyEmail');
-});
 
 Route::controller(WishlistController::class)->group(function (){
     Route::get('/users/wishlists', 'getWishlistByUserId')->middleware('auth_jwt');
