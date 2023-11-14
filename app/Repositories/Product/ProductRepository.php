@@ -122,19 +122,12 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         }
 
 
-        if ($request->status != null &&
-            $request->status != 0 &&
-            $request->status != 1 &&
-            $request->status != 4 &&
-            $request->status != 5) {
-            $query->where('products.status', $request->status);
-        }
 
         if ($request->status != null || !empty($request->status)) {
             foreach ($request->status as $status) {
                 if ($status == 0 ||
                 $status == 1 ||
-                $status == 4 ||
+                $status == 2 ||
                 $status == 5) {
                     return "status";
                 }
@@ -247,7 +240,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
         $query->whereNull('products.deleted_at')->whereNull('products.deleted_by');
         $query->where('products.status', '!=', 0);
         $query->where('products.status', '!=', 1);
-        $query->where('products.status', '!=', 4);
+        $query->where('products.status', '!=', 2);
         $query->where('products.status', '!=', 5);
 
         return $query->select('products.*')
