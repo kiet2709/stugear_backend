@@ -21,6 +21,8 @@ class AppConstant {
     public static $AVATAR_FEMALE = 'https://www.studytienganh.vn/upload/2022/05/112273.jpg';
     public static $PRODUCT_THUMBNAIL = 'https://nordicdesign.ca/wp-content/uploads/2020/02/book-thumbnail.jpg';
 
+    public static $CATEGORY_THUMBNAIL = 'https://o2osell.com/cat_img/default.png?1587036898';
+
     public static $STATUS_PRODUCT = [
         'chặn' => '0',
         'nháp' => '1',

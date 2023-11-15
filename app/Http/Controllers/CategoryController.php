@@ -41,6 +41,11 @@ class CategoryController extends Controller
     public function view($id)
     {
         $category = $this->categoryRepository->getById($id);
+        $data = [];
+        $data['id'] = $category->id;
+        $data['name'] = $category->name;
+        $data['description'] = $category->description;
+        $data['image'] = AppConstant::$DOMAIN . 'api/categories/' . $category->id . '/images';
         if (!$category)
         {
             return response()->json([
@@ -51,7 +56,7 @@ class CategoryController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'found this category',
-                'data' => $category
+                'data' => $data
             ]);
         }
     }
@@ -70,14 +75,21 @@ class CategoryController extends Controller
         ], $statusCode);
     }
     public function getImage($id){
-        $path = ImageService::getPathImage($id, 'categories');
-        if (str_contains($path, 'uploads')){
+        $category = $this->categoryRepository->getById($id);
+        if ($category->image_id == null) {
+            $imageData = file_get_contents(AppConstant::$CATEGORY_THUMBNAIL);
             header('Content-Type: image/jpeg');
-            readfile($path);
+            echo $imageData;
         } else {
-            return response()->json([
-                'message' => $path
-            ]);
+            $path = ImageService::getPathImage($id, 'categories');
+            if (str_contains($path, 'uploads')){
+                header('Content-Type: image/jpeg');
+                readfile($path);
+            } else {
+                return response()->json([
+                    'message' => $path
+                ]);
+            }
         }
     }
 
